@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { auth } from '../../config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { Link } from 'react-router-dom';
 
 export const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -17,15 +18,34 @@ export const SignIn = () => {
 
   return (
     <>
-      <div>
-        <h1>SingIn</h1>
-        <input placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
-        <input
-          placeholder='Password'
-          type='password'
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={signIn}>Sign In</button>
+      <div className='center'>
+        <h1>Zaloguj</h1>
+        <form>
+          <div className='txt_field'>
+            <input type='email' onChange={(e) => setEmail(e.target.value)} />
+            <span></span>
+            <label>Adres e-mail</label>
+          </div>
+          <div className='txt_field'>
+            <input
+              type='password'
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span></span>
+            <label>Hasło</label>
+          </div>
+          <div className='pass'>
+            <Link to='/reset' className='resetPassword'>
+              Zapomnialeś hasła?
+            </Link>
+          </div>
+          <button onClick={signIn} className='signIn'>
+            Zaloguj
+          </button>
+          <div className='signup_link'>
+            Nie masz konta? <Link to='/signup'>Zarejestruj się</Link>
+          </div>
+        </form>
       </div>
     </>
   );
