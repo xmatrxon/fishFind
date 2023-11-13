@@ -13,7 +13,7 @@ export const SignUp = () => {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      history('/account');
+      history('/setUsername');
     } catch (err) {
       console.log(err);
     }

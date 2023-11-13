@@ -1,6 +1,6 @@
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ authUser }) => {
   return (
     <nav className='nav'>
       <Link to='/' className='site-title'>
@@ -10,6 +10,7 @@ const Navbar = () => {
         <CustomLink to='/map'>Mapa</CustomLink>
         <CustomLink to='/chat'>Czat</CustomLink>
         <CustomLink to='/account'>Konto</CustomLink>
+        {authUser ? <CustomLink to='/logout'>Wyloguj</CustomLink> : null}
       </ul>
     </nav>
   );

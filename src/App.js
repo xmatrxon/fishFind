@@ -9,7 +9,9 @@ import Chat from './components/Chat';
 import Account from './components/Account';
 import { SignUp } from './components/auth/SignUp';
 import { SignIn } from './components/auth/SignIn';
+import Logout from './components/auth/Logout';
 import ResetPassword from './components/ResetPassword';
+import SetUsername from './components/SetUsername';
 
 import { useEffect, useState } from 'react';
 
@@ -42,6 +44,11 @@ function App() {
           <Route path='/signup' element={<SignUp authUser={authUser} />} />
           <Route path='/signin' element={<SignIn authUser={authUser} />} />
           <Route path='/reset' element={<ResetPassword />} />
+          <Route path='/logout' element={<Logout />} />
+          <Route
+            path='/setUsername'
+            element={<SetUsername authUser={authUser} />}
+          />
         </Routes>
       </div>
     </>
