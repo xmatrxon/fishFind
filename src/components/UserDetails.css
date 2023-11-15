@@ -1,26 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(120deg, #2980b9, #8e44ad);
-  height: 100vh;
-  overflow: hidden;
-}
-
 .center {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
+  width: 700px;
   background: white;
   border-radius: 10px;
   box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.05);
@@ -137,3 +120,28 @@ input:hover {
   color: #a6a6a6;
 }
 
+.userDetails {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 20px;
+}
+
+.changeDetails {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+.changeDetails button {
+  width: 30%;
+  height: 50px;
+  border: 1px solid;
+  background: #2691d9;
+  border-radius: 25px;
+  font-size: 18px;
+  color: #e9f4fb;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  margin: 1rem;
+}

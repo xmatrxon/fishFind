@@ -14,6 +14,8 @@ import ResetPassword from './components/ResetPassword';
 import SetUsername from './components/SetUsername';
 
 import { useEffect, useState } from 'react';
+import ChangePassword from './components/ChangePassword';
+import ChangeUsername from './components/ChangeUsername';
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -48,6 +50,14 @@ function App() {
           <Route
             path='/setUsername'
             element={<SetUsername authUser={authUser} />}
+          />
+          <Route
+            path='/changePassword'
+            element={<ChangePassword authUser={authUser} />}
+          />
+          <Route
+            path='/changeUsername'
+            element={<ChangeUsername authUser={authUser} />}
           />
         </Routes>
       </div>

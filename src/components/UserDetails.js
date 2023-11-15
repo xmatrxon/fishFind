@@ -1,13 +1,5 @@
 const UserDetails = ({ authUser }) => {
-  return (
-    <>
-      {authUser ? (
-        <>
-          <p>{`Zalogowano jako ${authUser.email}`}</p>
-        </>
-      ) : null}
-    </>
-  );
+  return <>{authUser ? <></> : null}</>;
 };
 
 export default UserDetails;
