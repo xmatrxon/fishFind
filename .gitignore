@@ -19,6 +19,7 @@
 .env.production.local
 .env
 Plan.txt
+voivodeships
 
 npm-debug.log*
 yarn-debug.log*

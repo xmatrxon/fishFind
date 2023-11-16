@@ -53,7 +53,6 @@ export const UserFetch = ({ authUser }) => {
               <p className='userDetails'>
                 Nazwa użytkownika: {user.data.username}
               </p>
-              <p className='userDetails'>UID: {user.data.UID}</p>
               <div className='changeDetails'>
                 <button
                   onClick={() => {
