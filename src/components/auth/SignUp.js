@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { auth } from '../../config/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { auth } from "../../config/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-import '../Account.css';
+import "../Account.css";
 
 export const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const history = useNavigate();
 
@@ -15,7 +15,7 @@ export const SignUp = () => {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      history('/setUsername');
+      history("/setUsername");
     } catch (err) {
       console.log(err);
     }
@@ -23,23 +23,23 @@ export const SignUp = () => {
 
   return (
     <>
-      <div className='center'>
+      <div className="center">
         <h1>Zarejestruj się</h1>
         <form>
-          <div className='txt_field'>
-            <input type='email' onChange={(e) => setEmail(e.target.value)} />
+          <div className="txt_field">
+            <input type="email" onChange={(e) => setEmail(e.target.value)} />
             <span></span>
             <label>Adres e-mail</label>
           </div>
-          <div className='txt_field'>
+          <div className="txt_field">
             <input
-              type='password'
+              type="password"
               onChange={(e) => setPassword(e.target.value)}
             />
             <span></span>
             <label>Hasło</label>
           </div>
-          <button onClick={signUp} className='signUp'>
+          <button onClick={signUp} className="signUp">
             Zarejestruj się
           </button>
         </form>

@@ -1,16 +1,16 @@
-import { Link, useMatch, useResolvedPath } from 'react-router-dom';
+import { Link, useMatch, useResolvedPath } from "react-router-dom";
 
 const Navbar = ({ authUser }) => {
   return (
-    <nav className='nav'>
-      <Link to='/' className='site-title'>
+    <nav className="nav">
+      <Link to="/" className="site-title">
         FishFind
       </Link>
       <ul>
-        <CustomLink to='/map'>Mapa</CustomLink>
-        <CustomLink to='/chat'>Tablica</CustomLink>
-        <CustomLink to='/account'>Konto</CustomLink>
-        {authUser ? <CustomLink to='/logout'>Wyloguj</CustomLink> : null}
+        <CustomLink to="/map">Mapa</CustomLink>
+        <CustomLink to="/chat">Tablica</CustomLink>
+        <CustomLink to="/account">Konto</CustomLink>
+        {authUser ? <CustomLink to="/logout">Wyloguj</CustomLink> : null}
       </ul>
     </nav>
   );
@@ -21,7 +21,7 @@ const CustomLink = ({ to, children, ...props }) => {
   const isActive = useMatch({ path: resolvedPath.pathname, end: true });
 
   return (
-    <li className={isActive ? 'active' : ''}>
+    <li className={isActive ? "active" : ""}>
       <Link to={to} {...props}>
         {children}
       </Link>

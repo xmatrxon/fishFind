@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { updatePassword, getAuth } from 'firebase/auth';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { updatePassword, getAuth } from "firebase/auth";
 
 const ChangePassword = ({ authUser }) => {
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -15,25 +15,25 @@ const ChangePassword = ({ authUser }) => {
       .catch((err) => {
         console.log(err);
       });
-    history('/account');
+    history("/account");
   };
 
   return (
     <>
       {authUser ? (
         <>
-          <div className='center'>
+          <div className="center">
             <h1>Podaj nowe hasło</h1>
             <form>
-              <div className='txt_field'>
+              <div className="txt_field">
                 <input
-                  type='password'
+                  type="password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <span></span>
                 <label>Hasło</label>
               </div>
-              <button onClick={insertPassword} className='signUp'>
+              <button onClick={insertPassword} className="signUp">
                 Ustaw
               </button>
             </form>
