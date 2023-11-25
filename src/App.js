@@ -37,7 +37,7 @@ function App() {
   return (
     <>
       <Navbar authUser={authUser} />
-      <div className="container">
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/map" element={<Map />} />

@@ -3,7 +3,7 @@ import { Link, useMatch, useResolvedPath } from "react-router-dom";
 const Navbar = ({ authUser }) => {
   return (
     <nav className="nav">
-      <Link to="/" className="site-title">
+      <Link to="/" className="text-4xl">
         FishFind
       </Link>
       <ul>

@@ -81,7 +81,7 @@ const Map = () => {
           />
           <AddMarker />
           <Control prepend position="topright">
-            <div className="controlButtons">
+            <div>
               <Tooltip id="my-tooltip" />
               <Button
                 variant="contained"

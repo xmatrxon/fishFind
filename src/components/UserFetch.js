@@ -4,8 +4,6 @@ import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 
-import "./UserDetails.css";
-
 export const UserFetch = ({ authUser }) => {
   const [userData, setUserData] = useState(null);
   const history = useNavigate();
@@ -42,33 +40,43 @@ export const UserFetch = ({ authUser }) => {
 
   return (
     <>
-      <div className="center">
-        <h1>Twoje dane</h1>
-        <div className="changeData">
-          <p className="userDetails">{`Adres email: ${authUser.email}`}</p>
-        </div>
-        {userData &&
-          userData.map((user) => (
-            <div key={user.id}>
-              <p className="userDetails">
-                Nazwa użytkownika: {user.data.username}
-              </p>
-              <div className="changeDetails">
-                <button
-                  onClick={() => {
-                    changeUsernamee(user.id);
-                  }}>
-                  Zmień nazwę
-                </button>
-                <button
-                  onClick={() => {
-                    handleClick(user.id);
-                  }}>
-                  Zmień hasło
-                </button>
-              </div>
+      <div className="flex h-screen w-screen justify-center">
+        <div className="w-2/5 self-center">
+          <form className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+            <h1 className="border-silver border-b-2 border-solid pb-4">
+              Twoje dane
+            </h1>
+            <div>
+              <p className="my-5 text-xl">{`Adres email: ${authUser.email}`}</p>
             </div>
-          ))}
+            <div>
+              {userData &&
+                userData.map((user) => (
+                  <div key={user.id}>
+                    <p className="my-5 text-xl">
+                      Nazwa użytkownika: {user.data.username}
+                    </p>
+                    <div>
+                      <button
+                        className="focus:shadow-outline mx-5 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                        onClick={() => {
+                          changeUsernamee(user.id);
+                        }}>
+                        Zmień nazwę
+                      </button>
+                      <button
+                        className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                        onClick={() => {
+                          handleClick(user.id);
+                        }}>
+                        Zmień hasło
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </form>
+        </div>
       </div>
     </>
   );

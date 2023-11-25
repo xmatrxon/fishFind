@@ -3,13 +3,51 @@ import Select from "react-select";
 import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import CloseIcon from "@mui/icons-material/Close";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const FormPopup = (props) => {
-  const [name, setName] = useState("");
   const [voivodeship, setVoivodeship] = useState("");
-  const [description, setDescription] = useState("");
-  const [rules, setRules] = useState("");
   const [fish, setFish] = useState("");
+
+  const [clickedButton, setClickedButton] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      description: "",
+      rules: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .max(30, "Maksymalna ilość znaków to 30")
+        .required("Nazwa łowiska jest wymagana"),
+      description: Yup.string()
+        .required("Opis łowiska jest wymagany")
+        .max(300, "Maksymalna ilość znaków to 300"),
+      rules: Yup.string().max(300, "Maksymalna ilość znaków to 300"),
+      voivodeship: Yup.string().required("Województwo jest wymagane"),
+      fish: Yup.array().required("Conajmniej jeden gatunek jest wymagany"),
+    }),
+    onSubmit: async () => {
+      const markersCollectionRef = collection(db, "markers");
+
+      try {
+        await addDoc(markersCollectionRef, {
+          id: Date.now(),
+          name: formik.values.name,
+          voivodeship: voivodeship,
+          description: formik.values.description,
+          rules: formik.values.rules,
+          fish: fish,
+          lon: props.lng,
+          lat: props.lat,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  });
 
   const fishList = [
     { value: "amur", label: "Amur" },
@@ -59,34 +97,23 @@ const FormPopup = (props) => {
 
   const handleFish = (data) => {
     setFish(data);
+    const selectedFishValues = data.map((fishOption) => fishOption.value);
+    formik.setFieldValue("fish", selectedFishValues);
+    formik.setFieldTouched("fish", true);
   };
 
   const handleVoivodeship = (data) => {
     setVoivodeship(data);
-  };
-
-  const clickHander = () => {
-    const markersCollectionRef = collection(db, "markers");
-    try {
-      addDoc(markersCollectionRef, {
-        id: Date.now(),
-        name: name,
-        voivodeship: voivodeship,
-        description: description,
-        rules: rules,
-        fish: fish,
-        lon: props.lng,
-        lat: props.lat,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    formik.setFieldValue("voivodeship", data.value);
+    formik.setFieldTouched("voivodeship", true);
   };
 
   return props.trigger ? (
     <div className="align-center z-100 fixed flex h-screen w-screen justify-center">
       <div className="t-1/2 l-1/2 absolute w-1/2 p-32">
-        <form className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
           <div className="flex justify-between">
             <p></p>
             <h1 className="text-xl">Dodaj łowisko</h1>
@@ -103,8 +130,16 @@ const FormPopup = (props) => {
               id="name"
               type="text"
               placeholder="Nazwa łowiska"
-              onChange={(e) => setName(e.target.value)}
+              name="name"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.name}
             />
+            {formik.touched.name && formik.errors.name ? (
+              <p className="text-xs italic text-red-500">
+                {formik.errors.name}
+              </p>
+            ) : null}
           </div>
           <div className="mb-4">
             <input
@@ -112,8 +147,16 @@ const FormPopup = (props) => {
               id="description"
               type="text"
               placeholder="Opis łowiska"
-              onChange={(e) => setDescription(e.target.value)}
+              name="description"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.description}
             />
+            {formik.touched.description && formik.errors.description ? (
+              <p className="text-xs italic text-red-500">
+                {formik.errors.description}
+              </p>
+            ) : null}
           </div>
           <div className="mb-4">
             <textarea
@@ -122,8 +165,16 @@ const FormPopup = (props) => {
               type="text"
               placeholder="Regulamin łowiska"
               rows="2"
-              onChange={(e) => setRules(e.target.value)}
+              name="rules"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.rules}
             />
+            {formik.touched.rules && formik.errors.rules ? (
+              <p className="text-xs italic text-red-500">
+                {formik.errors.rules}
+              </p>
+            ) : null}
           </div>
           <div className="mb-4">
             <Select
@@ -132,8 +183,15 @@ const FormPopup = (props) => {
               placeholder="Województwo"
               value={voivodeship}
               onChange={handleVoivodeship}
+              onBlur={formik.handleBlur}
               isMulti={false}
             />
+            {(formik.touched.voivodeship || clickedButton) &&
+            formik.errors.voivodeship ? (
+              <p className="text-xs italic text-red-500">
+                {formik.errors.voivodeship}
+              </p>
+            ) : null}
           </div>
           <div className="mb-4">
             <Select
@@ -142,14 +200,20 @@ const FormPopup = (props) => {
               placeholder="Występujące ryby"
               value={fish}
               onChange={handleFish}
+              onBlur={formik.handleBlur}
               isMulti
             />
+            {(formik.touched.fish || clickedButton) && formik.errors.fish ? (
+              <p className="text-xs italic text-red-500">
+                {formik.errors.fish}
+              </p>
+            ) : null}
           </div>
           <div className="flex items-center justify-between">
             <button
               className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-              type="button"
-              onClick={clickHander}>
+              type="submit"
+              onClick={() => setClickedButton(true)}>
               Dodaj
             </button>
           </div>
