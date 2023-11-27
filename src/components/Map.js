@@ -6,8 +6,8 @@ import {
   Marker,
   Popup,
   useMapEvents,
+  GeoJSON,
 } from "react-leaflet";
-import slaskie from "../voivodeships/slaskie.json";
 import L from "leaflet";
 import Control from "react-leaflet-custom-control";
 import { Button } from "@mui/material";
@@ -18,9 +18,27 @@ import { useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import FormPopup from "./FormPopup";
+import pointInPolygon from "point-in-polygon";
 
 import { db } from "../config/firebase";
 import { collection, getDocs } from "firebase/firestore";
+
+import slaskie from "../voivodeships/slaskie.json";
+import dolnoslaskie from "../voivodeships/dolnoslaskie.json";
+// import kujawskoPomorskie from "../voivodeships/kujawsko-pomorskie.json";
+// import lodzkie from "../voivodeships/lodzkie.json";
+// import lubelskie from "../voivodeships/lubelskie.json";
+// import lubuskie from "../voivodeships/lubuskie.json";
+// import malopolskie from "../voivodeships/malopolskie.json";
+// import mazowieckie from "../voivodeships/mazowieckie.json";
+// import opolskie from "../voivodeships/opolskie.json";
+// import podkarpackie from "../voivodeships/podkarpackie.json";
+// import podlaskie from "../voivodeships/podlaskie.json";
+// import pomorskie from "../voivodeships/pomorskie.json";
+// import swietokrzyskie from "../voivodeships/swietokrzyskie.json";
+// import warminskoMazurskie from "../voivodeships/warminsko-mazurskie.json";
+// import wielkopolskie from "../voivodeships/wielkopolskie.json";
+// import zachodnioPomorskie from "../voivodeships/zachodnio-pomorskie.json";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -37,10 +55,30 @@ const Map = () => {
   const [markers, setMarkers] = useState([]);
   const [markerLat, setMarkerLat] = useState();
   const [markerLng, setMarkerLng] = useState();
+  const [clickedWaterId, setClickedWaterId] = useState(null);
 
   const maxBounds = [
     [54.868323814195975, 13.503610861651275],
     [48.591069159320504, 24.93425207815491],
+  ];
+
+  const voivodeships = [
+    { name: "slaskie", data: slaskie },
+    { name: "dolnoslaskie", data: dolnoslaskie },
+    // { name: "kujawskoPomorskie", data: kujawskoPomorskie },
+    // { name: "lodzkie", data: lodzkie },
+    // { name: "lubelskie", data: lubelskie },
+    // { name: "lubuskie", data: lubuskie },
+    // { name: "malopolskie", data: malopolskie },
+    // { name: "mazowieckie", data: mazowieckie },
+    // { name: "opolskie", data: opolskie },
+    // { name: "podkarpackie", data: podkarpackie },
+    // { name: "podlaskie", data: podlaskie },
+    // { name: "pomorskie", data: pomorskie },
+    // { name: "swietokrzyskie", data: swietokrzyskie },
+    // { name: "warminskoMazurskie", data: warminskoMazurskie },
+    // { name: "wielkopolskie", data: wielkopolskie },
+    // { name: "zachodnioPomorskie", data: zachodnioPomorskie },
   ];
 
   useEffect(() => {
@@ -49,21 +87,65 @@ const Map = () => {
       setMarkers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getMarkers();
-  }, []); //Dodac odswierzenie po dodaniu markera
+  }, [popupVisible]); //Dodac odswierzenie po dodaniu markera
+
+  useEffect(() => {
+    checkMatchingMarker();
+  }, [markers, clickedWaterId, popupVisible]);
+
+  const onEachWater = (feature, layer) => {
+    const waterName = feature.properties["@id"];
+    layer.bindPopup(waterName);
+  };
+
+  const closePopup = (data) => {
+    setPopupVisible(data.value);
+  };
 
   const AddMarker = () => {
     useMapEvents({
-      click: (e) => {
-        setMarkerLat(e.latlng.lat);
-        setMarkerLng(e.latlng.lng);
-        setPopupVisible(true);
+      click: async (e) => {
+        const clickedLatLng = e.latlng;
+        setMarkerLat(clickedLatLng.lat);
+        setMarkerLng(clickedLatLng.lng);
+
+        const isInsideAnyVoivodeship = voivodeships.some((voivodeship) => {
+          return voivodeship.data.features.some((feature) => {
+            const coordinates = feature.geometry.coordinates[0];
+            if (
+              pointInPolygon(
+                [clickedLatLng.lng, clickedLatLng.lat],
+                coordinates,
+              )
+            ) {
+              setClickedWaterId(feature.properties["@id"]);
+              return true;
+            }
+            return false;
+          });
+        });
+
+        if (isInsideAnyVoivodeship) {
+          setPopupVisible(true);
+          // console.log(`Id zbiornika: ${clickedWaterId}`);
+        } else {
+          alert("Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym");
+        }
       },
     });
   };
 
-  const onEachWater = (slaskie, layer) => {
-    const waterName = slaskie.properties.name;
-    layer.bindPopup(waterName);
+  const checkMatchingMarker = () => {
+    const matchingMarker = markers.find(
+      (marker) => marker.waterId === clickedWaterId,
+    );
+
+    if (matchingMarker && popupVisible) {
+      setPopupVisible(false);
+      alert(
+        `W tej lokalizacji znajduje się już znacznik: ${matchingMarker.id}`,
+      );
+    }
   };
 
   return (
@@ -107,7 +189,6 @@ const Map = () => {
               </Button>
             </div>
           </Control>
-
           {/* <GeoJSON data={slaskie.features} onEachFeature={onEachWater} /> */}
           {markersVisible ? (
             <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
@@ -128,6 +209,8 @@ const Map = () => {
         setTrigger={setPopupVisible}
         lat={markerLat}
         lng={markerLng}
+        clickedWaterId={clickedWaterId}
+        pass={closePopup}
       />
     </>
   );

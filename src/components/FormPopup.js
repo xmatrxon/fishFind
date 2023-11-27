@@ -11,6 +11,7 @@ const FormPopup = (props) => {
   const [fish, setFish] = useState("");
 
   const [clickedButton, setClickedButton] = useState(false);
+  const [closePopup, setClosePopup] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -42,6 +43,9 @@ const FormPopup = (props) => {
           fish: fish,
           lon: props.lng,
           lat: props.lat,
+          waterId: props.clickedWaterId,
+        }).then(() => {
+          props.pass(true);
         });
       } catch (err) {
         console.log(err);
