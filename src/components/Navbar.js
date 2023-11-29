@@ -8,7 +8,7 @@ const Navbar = ({ authUser }) => {
       </Link>
       <ul>
         <CustomLink to="/map">Mapa</CustomLink>
-        <CustomLink to="/chat">Tablica</CustomLink>
+        <CustomLink to="/dashboard">Tablica</CustomLink>
         <CustomLink to="/account">Konto</CustomLink>
         {authUser ? <CustomLink to="/logout">Wyloguj</CustomLink> : null}
       </ul>

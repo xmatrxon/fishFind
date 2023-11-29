@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Map from "./components/Map";
-import Chat from "./components/Chat";
+import Dashboard from "./components/Dashboard";
 import Account from "./components/Account";
 import { SignUp } from "./components/auth/SignUp";
 import { SignIn } from "./components/auth/SignIn";
@@ -41,7 +41,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/account" element={<Account authUser={authUser} />} />
           <Route path="/signup" element={<SignUp authUser={authUser} />} />
           <Route path="/signin" element={<SignIn authUser={authUser} />} />

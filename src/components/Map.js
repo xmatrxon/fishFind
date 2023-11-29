@@ -23,23 +23,6 @@ import pointInPolygon from "point-in-polygon";
 import { db } from "../config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-import slaskie from "../voivodeships/slaskie.json";
-import dolnoslaskie from "../voivodeships/dolnoslaskie.json";
-// import kujawskoPomorskie from "../voivodeships/kujawsko-pomorskie.json";
-// import lodzkie from "../voivodeships/lodzkie.json";
-// import lubelskie from "../voivodeships/lubelskie.json";
-// import lubuskie from "../voivodeships/lubuskie.json";
-// import malopolskie from "../voivodeships/malopolskie.json";
-// import mazowieckie from "../voivodeships/mazowieckie.json";
-// import opolskie from "../voivodeships/opolskie.json";
-// import podkarpackie from "../voivodeships/podkarpackie.json";
-// import podlaskie from "../voivodeships/podlaskie.json";
-// import pomorskie from "../voivodeships/pomorskie.json";
-// import swietokrzyskie from "../voivodeships/swietokrzyskie.json";
-// import warminskoMazurskie from "../voivodeships/warminsko-mazurskie.json";
-// import wielkopolskie from "../voivodeships/wielkopolskie.json";
-// import zachodnioPomorskie from "../voivodeships/zachodnio-pomorskie.json";
-
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -56,29 +39,11 @@ const Map = () => {
   const [markerLat, setMarkerLat] = useState();
   const [markerLng, setMarkerLng] = useState();
   const [clickedWaterId, setClickedWaterId] = useState(null);
+  const [voivodeships, setVoivodeships] = useState([]);
 
   const maxBounds = [
     [54.868323814195975, 13.503610861651275],
     [48.591069159320504, 24.93425207815491],
-  ];
-
-  const voivodeships = [
-    { name: "slaskie", data: slaskie },
-    { name: "dolnoslaskie", data: dolnoslaskie },
-    // { name: "kujawskoPomorskie", data: kujawskoPomorskie },
-    // { name: "lodzkie", data: lodzkie },
-    // { name: "lubelskie", data: lubelskie },
-    // { name: "lubuskie", data: lubuskie },
-    // { name: "malopolskie", data: malopolskie },
-    // { name: "mazowieckie", data: mazowieckie },
-    // { name: "opolskie", data: opolskie },
-    // { name: "podkarpackie", data: podkarpackie },
-    // { name: "podlaskie", data: podlaskie },
-    // { name: "pomorskie", data: pomorskie },
-    // { name: "swietokrzyskie", data: swietokrzyskie },
-    // { name: "warminskoMazurskie", data: warminskoMazurskie },
-    // { name: "wielkopolskie", data: wielkopolskie },
-    // { name: "zachodnioPomorskie", data: zachodnioPomorskie },
   ];
 
   useEffect(() => {
@@ -86,7 +51,46 @@ const Map = () => {
       const data = await getDocs(markersCollectionRef);
       setMarkers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
+
+    const fetchVoivodeships = async () => {
+      try {
+        const voivodeshipNames = [
+          "slaskie",
+          "dolnoslaskie",
+          "kujawsko-pomorskie",
+          "lodzkie",
+          "lubelskie",
+          "lubuskie",
+          "malopolskie",
+          "mazowieckie",
+          "opolskie",
+          "podkarpackie",
+          "podlaskie",
+          "pomorskie",
+          "swietokrzyskie",
+          "warminsko-mazurskie",
+          "wielkopolskie",
+          "zachodnio-pomorskie",
+        ];
+
+        const voivodeshipsData = await Promise.all(
+          voivodeshipNames.map(async (voivodeship) => {
+            const response = await fetch(
+              `https://xmatrxon.github.io/apiSite/${voivodeship}.json`,
+            );
+            const data = await response.json();
+            return { name: voivodeship, data };
+          }),
+        );
+
+        setVoivodeships(voivodeshipsData);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     getMarkers();
+    fetchVoivodeships();
   }, [popupVisible]); //Dodac odswierzenie po dodaniu markera
 
   useEffect(() => {

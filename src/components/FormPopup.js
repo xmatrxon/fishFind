@@ -11,7 +11,6 @@ const FormPopup = (props) => {
   const [fish, setFish] = useState("");
 
   const [clickedButton, setClickedButton] = useState(false);
-  const [closePopup, setClosePopup] = useState(false);
 
   const formik = useFormik({
     initialValues: {
