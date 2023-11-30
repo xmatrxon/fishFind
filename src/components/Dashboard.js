@@ -21,11 +21,13 @@ const Dashboard = () => {
   const [allWaterData, setAllWaterData] = useState([]);
 
   const [lastDoc, setLastDoc] = useState(null);
-  const [pageDow, setPageDown] = useState(0);
-  const [pageBackk, setPageBackk] = useState(0);
+  const [pageDown, setPageDown] = useState(0);
+  const [pageBack, setPageBack] = useState(0);
   const [firstDoc, setFirstDoc] = useState(null);
   const [hasPrevPage, setHasPrevPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [modulo, setModulo] = useState(null);
+  const [helper, setHelper] = useState(0);
 
   const voivodeshipList = [
     { value: "dolnoslaskie", label: "Dolnośląskie" },
@@ -73,6 +75,21 @@ const Dashboard = () => {
     { value: "inne", label: "Inne" },
   ];
 
+  const checkMakersLength = async () => {
+    const q = query(collection(db, "markers"));
+
+    try {
+      const querySnapshot = await getDocs(q);
+      setModulo(querySnapshot.docs.length);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    checkMakersLength();
+  }, []);
+
   const clickHandler = async (e) => {
     e.preventDefault();
     const q = query(collection(db, "markers"), where("name", "==", name));
@@ -103,11 +120,15 @@ const Dashboard = () => {
       querySnapshot.forEach((doc) => {
         waterData.push({ id: doc.id, data: doc.data() });
       });
+
       setAllWaterData(waterData);
       setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
       setFirstDoc(querySnapshot.docs[0]);
-
+      setHelper((prevHeler) => prevHeler + 5);
       setHasNextPage(querySnapshot.docs.length === 5);
+      if (helper === modulo) {
+        setHasNextPage(false);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -115,16 +136,21 @@ const Dashboard = () => {
 
   useEffect(() => {
     allWaters();
-  }, [pageDow]);
+  }, [pageDown]);
 
   const paginate = () => {
     setPageDown((prevPage) => prevPage + 1);
-    setPageBackk(pageDow);
+    setPageBack((prevPage) => prevPage + 1);
     setHasPrevPage(true);
   };
 
-  const pageBack = async () => {
-    setPageBackk((prevPage) => prevPage - 1);
+  const previous = async () => {
+    if (pageBack <= 1) {
+      setPageBack(0);
+    } else {
+      setPageBack((prevPage) => prevPage - 1);
+    }
+
     const q = query(
       collection(db, "markers"),
       orderBy("name"),
@@ -141,8 +167,9 @@ const Dashboard = () => {
       setAllWaterData(waterData);
       setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
       setFirstDoc(querySnapshot.docs[0]);
+      setHelper((prevHeler) => prevHeler - 5);
 
-      if (pageBackk >= 1) {
+      if (pageBack > 1) {
         setHasPrevPage(true);
       } else {
         setHasPrevPage(false);
@@ -155,7 +182,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center overflow-auto">
-      <div className=" mt-20 h-full w-9/12 rounded-lg bg-white">
+      <div className=" mt-20 h-3/4 w-9/12 rounded-lg bg-white">
         <div>
           <form className="border-silver mb-10 flex w-full flex-wrap rounded border-b-2 border-solid bg-white pt-6">
             <div className="mb-6 ml-16 flex w-full">
@@ -195,29 +222,33 @@ const Dashboard = () => {
           {allWaterData.map((water) => (
             <div
               key={water.data.id}
-              className="mb-5 flex justify-between rounded-lg bg-red-500 px-10 py-3">
-              <div>
+              className="mb-5 flex h-full justify-between rounded-lg bg-purple-300 px-10 py-3">
+              <div className="w-full">
                 <p>{water.data.name}</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-fish"
-                  width={24}
-                  height={24}
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                  <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                  <path d="M18 11v.01" />
-                  <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                </svg>
-                {Array.isArray(water.data.fish) && (
-                  <p>{water.data.fish.map((fish) => fish.label).join(", ")}</p>
-                )}
+                <div className="flex w-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon icon-tabler icon-tabler-fish mr-5"
+                    width={24}
+                    height={24}
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
+                    <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
+                    <path d="M18 11v.01" />
+                    <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
+                  </svg>
+                  {Array.isArray(water.data.fish) && (
+                    <p>
+                      {water.data.fish.map((fish) => fish.label).join(", ")}
+                    </p>
+                  )}
+                </div>
               </div>
               <button className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
                 Szczegóły
@@ -226,7 +257,7 @@ const Dashboard = () => {
           ))}
           <div className="mt-4 flex justify-center">
             <button
-              onClick={pageBack}
+              onClick={previous}
               className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
                 hasPrevPage ? "" : "cursor-not-allowed opacity-50"
               }`}
