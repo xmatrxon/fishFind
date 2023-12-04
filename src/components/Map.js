@@ -91,7 +91,7 @@ const Map = () => {
 
     getMarkers();
     fetchVoivodeships();
-  }, [popupVisible]); //Dodac odswierzenie po dodaniu markera
+  }, [popupVisible]);
 
   useEffect(() => {
     checkMatchingMarker();

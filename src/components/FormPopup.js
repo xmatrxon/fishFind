@@ -45,6 +45,9 @@ const FormPopup = (props) => {
           waterId: props.clickedWaterId,
         }).then(() => {
           props.pass(true);
+          formik.resetForm();
+          setFish("");
+          setVoivodeship("");
         });
       } catch (err) {
         console.log(err);

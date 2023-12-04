@@ -10,6 +10,8 @@ import {
   orderBy,
   endBefore,
   limitToLast,
+  startAt,
+  endAt,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -92,7 +94,57 @@ const Dashboard = () => {
 
   const clickHandler = async (e) => {
     e.preventDefault();
-    const q = query(collection(db, "markers"), where("name", "==", name));
+
+    let q = null;
+
+    if (name && !voivodeship && !fish) {
+      q = query(
+        collection(db, "markers"),
+        where("name", "==", name),
+        orderBy("name"),
+      );
+    } else if (voivodeship && !name && !fish) {
+      q = query(
+        collection(db, "markers"),
+        where("voivodeship", "==", voivodeship),
+        orderBy("name"),
+      );
+    } else if (fish && !name && !voivodeship) {
+      q = query(
+        collection(db, "markers"),
+        where("fish", "array-contains-any", fish),
+        orderBy("name"),
+      );
+    } else if (name && voivodeship && !fish) {
+      q = query(
+        collection(db, "markers"),
+        where("name", "==", name),
+        where("voivodeship", "==", voivodeship),
+        orderBy("name"),
+      );
+    } else if (name && fish && !voivodeship) {
+      q = query(
+        collection(db, "markers"),
+        where("name", "==", name),
+        where("fish", "array-contains-any", fish),
+        orderBy("name"),
+      );
+    } else if (fish && voivodeship && !name) {
+      q = query(
+        collection(db, "markers"),
+        where("voivodeship", "==", voivodeship),
+        where("fish", "array-contains-any", fish),
+        orderBy("name"),
+      );
+    } else if (name && fish && voivodeship) {
+      q = query(
+        collection(db, "markers"),
+        where("name", "==", name),
+        where("voivodeship", "==", voivodeship),
+        where("fish", "array-contains-any", fish),
+        orderBy("name"),
+      );
+    }
 
     try {
       const querySnapshot = await getDocs(q);
@@ -100,7 +152,15 @@ const Dashboard = () => {
       querySnapshot.forEach((doc) => {
         waterData.push({ id: doc.id, data: doc.data() });
       });
-      setWaterData(waterData);
+
+      setAllWaterData(waterData);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setFirstDoc(querySnapshot.docs[0]);
+      setHelper((prevHeler) => prevHeler + 5);
+      setHasNextPage(querySnapshot.docs.length === 5);
+      if (helper === modulo) {
+        setHasNextPage(false);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -180,6 +240,14 @@ const Dashboard = () => {
     }
   };
 
+  const handleVoivodeship = (data) => {
+    setVoivodeship(data);
+  };
+
+  const handleFish = (data) => {
+    setFish(data);
+  };
+
   return (
     <div className="flex h-screen w-screen items-center justify-center overflow-auto">
       <div className=" mt-20 h-3/4 w-9/12 rounded-lg bg-white">
@@ -199,7 +267,7 @@ const Dashboard = () => {
                 options={voivodeshipList}
                 placeholder="Województwo"
                 value={voivodeship}
-                onChange={(e) => setVoivodeship(e.target.value)}
+                onChange={handleVoivodeship}
                 isMulti={false}
               />
               <Select
@@ -207,7 +275,7 @@ const Dashboard = () => {
                 options={fishList}
                 placeholder="Występujące ryby"
                 value={fish}
-                onChange={(e) => setFish(e.target.value)}
+                onChange={handleFish}
                 isMulti
               />
               <button
