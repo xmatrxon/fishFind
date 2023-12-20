@@ -16,6 +16,7 @@ import SetUsername from "./components/SetUsername";
 import { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import ChangeUsername from "./components/ChangeUsername";
+import WaterDetails from "./components/WaterDetails";
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -42,6 +43,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/map" element={<Map />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/dashboard/:waterId"
+            element={<WaterDetails authUser={authUser} />}
+          />
           <Route path="/account" element={<Account authUser={authUser} />} />
           <Route path="/signup" element={<SignUp authUser={authUser} />} />
           <Route path="/signin" element={<SignIn authUser={authUser} />} />
