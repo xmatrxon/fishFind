@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import "../index.css";
+import FishIcon from "./FishIcon";
 
 const StrikeCallendar = ({ lat, lon, city }) => {
   const api_Key = process.env.REACT_APP_WEATHER_API_KEY;
@@ -177,83 +176,19 @@ const StrikeCallendar = ({ lat, lon, city }) => {
             <div className="flex w-full justify-around bg-[#00ced165] p-3">
               <div className=" flex w-24 flex-col">
                 <p>Wyśmienite</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-fish self-center"
-                  width={48}
-                  height={48}
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="limegreen"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                  <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                  <path d="M18 11v.01" />
-                  <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                </svg>
+                <FishIcon height={48} width={48} iconColor={"limegreen"} />
               </div>
               <div className="flex w-24 flex-col">
                 <p>Dobre</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-fish self-center"
-                  width={48}
-                  height={48}
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="darkcyan"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                  <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                  <path d="M18 11v.01" />
-                  <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                </svg>
+                <FishIcon height={48} width={48} iconColor={"darkcyan"} />
               </div>
               <div className="flex w-24 flex-col">
                 <p>Średnie</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-fish self-center"
-                  width={48}
-                  height={48}
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="orange"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                  <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                  <path d="M18 11v.01" />
-                  <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                </svg>
+                <FishIcon height={48} width={48} iconColor={"orange"} />
               </div>
               <div className="flex w-24 flex-col">
                 <p>Złe</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-fish self-center"
-                  width={48}
-                  height={48}
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="tomato"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                  <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                  <path d="M18 11v.01" />
-                  <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                </svg>
+                <FishIcon height={48} width={48} iconColor={"tomato"} />
               </div>
             </div>
             <div className="flex border-t-2 border-solid border-black ">
@@ -270,23 +205,7 @@ const StrikeCallendar = ({ lat, lon, city }) => {
                   {formatDate(day.date)}
                 </div>
                 <div className="flex w-1/2 justify-center py-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon icon-tabler icon-tabler-fish self-center"
-                    width={48}
-                    height={48}
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke={day.iconColor}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                    <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                    <path d="M18 11v.01" />
-                    <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                  </svg>
+                  <FishIcon height={48} width={48} iconColor={day.iconColor} />
                 </div>
               </div>
             ))}

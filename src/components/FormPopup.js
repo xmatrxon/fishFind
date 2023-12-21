@@ -4,6 +4,8 @@ import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
+import { voivodeshipList } from "../voivodeshipList";
+import { fishList } from "../fishList";
 import * as Yup from "yup";
 
 const FormPopup = (props) => {
@@ -54,52 +56,6 @@ const FormPopup = (props) => {
       }
     },
   });
-
-  const fishList = [
-    { value: "amur", label: "Amur" },
-    { value: "bolen", label: "Boleń" },
-    { value: "jaz", label: "Jaź" },
-    { value: "karas", label: "Karaś" },
-    { value: "karp", label: "Karp" },
-    { value: "kielb", label: "Kiełb" },
-    { value: "klen", label: "Kleń" },
-    { value: "krap", label: "Krąp" },
-    { value: "leszcz", label: "Leszcz" },
-    { value: "lin", label: "Lin" },
-    { value: "lipien", label: "Lipień" },
-    { value: "mietus", label: "Miętus" },
-    { value: "okon", label: "Okoń" },
-    { value: "pstragPotokowy", label: "Pstrąg potokowy" },
-    { value: "pstragTeczowy", label: "Pstrąg tęczowy" },
-    { value: "ploc", label: "Płoć" },
-    { value: "sandacz", label: "Sandacz" },
-    { value: "sum", label: "Sum" },
-    { value: "szczupak", label: "Szczupak" },
-    { value: "trocJeziorowa", label: "Troć jeziorowa" },
-    { value: "ukleja", label: "Ukleja" },
-    { value: "wzdrega", label: "Wzdręga" },
-    { value: "wegorz", label: "Węgorz" },
-    { value: "inne", label: "Inne" },
-  ];
-
-  const voivodeshipList = [
-    { value: "dolnoslaskie", label: "Dolnośląskie" },
-    { value: "kujawskoPomorskie", label: "Kujawsko-Pomorskie" },
-    { value: "lubelskie", label: "Lubelskie" },
-    { value: "lubuskie", label: "Lubuskie" },
-    { value: "lodzkie", label: "Łódzkie" },
-    { value: "malopolskie", label: "Małopolskie" },
-    { value: "mazowieckie", label: "Mazowieckie" },
-    { value: "opolskie", label: "Opolskie" },
-    { value: "podkarpackie", label: "Podkarpackie" },
-    { value: "podlaskie", label: "Podlaskie" },
-    { value: "pomorskie", label: "Pomorskie" },
-    { value: "slaskie", label: "Śląskie" },
-    { value: "swietokrzyskie", label: "Świętokrzyskie" },
-    { value: "warminskoMazurskie", label: "Warmińsko-Mazurskie" },
-    { value: "wielkopolskie", label: "Wielkopolskie" },
-    { value: "zachodniopomorskie", label: "Zachodniopomorskie" },
-  ];
 
   const handleFish = (data) => {
     setFish(data);

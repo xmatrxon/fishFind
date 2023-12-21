@@ -11,17 +11,16 @@ import {
 import L from "leaflet";
 import Control from "react-leaflet-custom-control";
 import { Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import FormPopup from "./FormPopup";
 import pointInPolygon from "point-in-polygon";
+import { Link } from "react-router-dom";
 
 import { db } from "../config/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -40,6 +39,7 @@ const Map = () => {
   const [markerLng, setMarkerLng] = useState();
   const [clickedWaterId, setClickedWaterId] = useState(null);
   const [voivodeships, setVoivodeships] = useState([]);
+  const [allWaterData, setAllWaterData] = useState([]);
 
   const maxBounds = [
     [54.868323814195975, 13.503610861651275],
@@ -50,6 +50,15 @@ const Map = () => {
     const getMarkers = async () => {
       const data = await getDocs(markersCollectionRef);
       setMarkers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    const getMM = async () => {
+      const q = query(collection(db, "markers"));
+      const querySnapshot = await getDocs(q);
+      const waterData = [];
+      querySnapshot.forEach((doc) => {
+        waterData.push({ id: doc.id, data: doc.data() });
+      });
+      setAllWaterData(waterData);
     };
 
     const fetchVoivodeships = async () => {
@@ -89,6 +98,7 @@ const Map = () => {
       }
     };
 
+    getMM();
     getMarkers();
     fetchVoivodeships();
   }, [popupVisible]);
@@ -152,6 +162,8 @@ const Map = () => {
     }
   };
 
+  console.log(allWaterData);
+
   return (
     <>
       <div className="absolute z-0">
@@ -172,35 +184,30 @@ const Map = () => {
               <Button
                 variant="contained"
                 data-tooltip-id="my-tooltip"
-                data-tooltip-content="Dodaj łowisko"
-                onClick={() => setPopupVisible(true)}>
-                <AddIcon />
-              </Button>
-              <Button
-                variant="contained"
-                data-tooltip-id="my-tooltip"
                 data-tooltip-content={
                   markersVisible ? "Ukryj łowiska" : "Pokaż łowiska"
                 }
                 onClick={() => setMarkersVisible(!markersVisible)}>
                 <RemoveRedEyeIcon />
               </Button>
-              <Button
-                variant="contained"
-                data-tooltip-id="my-tooltip"
-                data-tooltip-content="Powiększ mapę">
-                <FullscreenIcon />
-              </Button>
             </div>
           </Control>
           {/* <GeoJSON data={slaskie.features} onEachFeature={onEachWater} /> */}
           {markersVisible ? (
             <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
-              {markers.map((marker) => (
-                <Marker key={marker.id} position={[marker.lat, marker.lon]}>
+              {allWaterData.map((water) => (
+                <Marker
+                  key={water.id}
+                  position={[water.data.lat, water.data.lon]}>
                   <Popup>
-                    <Button>Szczegóły</Button>
-                    {marker.name}
+                    <div className="flex flex-col">
+                      <p className="flex self-center">{water.data.name}</p>
+                      <Link
+                        className="focus:shadow-outline flex justify-center rounded bg-blue-500 px-4 py-2 font-bold !text-white hover:bg-blue-700 focus:outline-none"
+                        to={`/dashboard/${water.data.id}`}>
+                        Szczegóły
+                      </Link>
+                    </div>
                   </Popup>
                 </Marker>
               ))}

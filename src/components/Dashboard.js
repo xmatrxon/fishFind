@@ -16,12 +16,14 @@ import {
 import { db } from "../config/firebase";
 import { Link } from "react-router-dom";
 import WaterDetails from "./WaterDetails";
+import { voivodeshipList } from "../voivodeshipList";
+import { fishList } from "../fishList";
+import FishIcon from "./FishIcon";
 
 const Dashboard = () => {
   const [name, setName] = useState("");
   const [voivodeship, setVoivodeship] = useState("");
   const [fish, setFish] = useState("");
-  const [waterData, setWaterData] = useState([]);
   const [allWaterData, setAllWaterData] = useState([]);
 
   const [lastDoc, setLastDoc] = useState(null);
@@ -34,52 +36,6 @@ const Dashboard = () => {
   const [helper, setHelper] = useState(0);
   const [isClickedDeatailsButton, setIsClickedDetailsButton] = useState(false);
   const [detailsId, setDetailsId] = useState(null);
-
-  const voivodeshipList = [
-    { value: "dolnoslaskie", label: "Dolnośląskie" },
-    { value: "kujawskoPomorskie", label: "Kujawsko-Pomorskie" },
-    { value: "lubelskie", label: "Lubelskie" },
-    { value: "lubuskie", label: "Lubuskie" },
-    { value: "lodzkie", label: "Łódzkie" },
-    { value: "malopolskie", label: "Małopolskie" },
-    { value: "mazowieckie", label: "Mazowieckie" },
-    { value: "opolskie", label: "Opolskie" },
-    { value: "podkarpackie", label: "Podkarpackie" },
-    { value: "podlaskie", label: "Podlaskie" },
-    { value: "pomorskie", label: "Pomorskie" },
-    { value: "slaskie", label: "Śląskie" },
-    { value: "swietokrzyskie", label: "Świętokrzyskie" },
-    { value: "warminskoMazurskie", label: "Warmińsko-Mazurskie" },
-    { value: "wielkopolskie", label: "Wielkopolskie" },
-    { value: "zachodniopomorskie", label: "Zachodniopomorskie" },
-  ];
-
-  const fishList = [
-    { value: "amur", label: "Amur" },
-    { value: "bolen", label: "Boleń" },
-    { value: "jaz", label: "Jaź" },
-    { value: "karas", label: "Karaś" },
-    { value: "karp", label: "Karp" },
-    { value: "kielb", label: "Kiełb" },
-    { value: "klen", label: "Kleń" },
-    { value: "krap", label: "Krąp" },
-    { value: "leszcz", label: "Leszcz" },
-    { value: "lin", label: "Lin" },
-    { value: "lipien", label: "Lipień" },
-    { value: "mietus", label: "Miętus" },
-    { value: "okon", label: "Okoń" },
-    { value: "pstragPotokowy", label: "Pstrąg potokowy" },
-    { value: "pstragTeczowy", label: "Pstrąg tęczowy" },
-    { value: "ploc", label: "Płoć" },
-    { value: "sandacz", label: "Sandacz" },
-    { value: "sum", label: "Sum" },
-    { value: "szczupak", label: "Szczupak" },
-    { value: "trocJeziorowa", label: "Troć jeziorowa" },
-    { value: "ukleja", label: "Ukleja" },
-    { value: "wzdrega", label: "Wzdręga" },
-    { value: "wegorz", label: "Węgorz" },
-    { value: "inne", label: "Inne" },
-  ];
 
   const checkMakersLength = async () => {
     const q = query(collection(db, "markers"));
@@ -307,23 +263,11 @@ const Dashboard = () => {
                   <div className="w-full">
                     <p>{water.data.name}</p>
                     <div className="flex w-full">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="icon icon-tabler icon-tabler-fish mr-5"
-                        width={24}
+                      <FishIcon
                         height={24}
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571" />
-                        <path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504" />
-                        <path d="M18 11v.01" />
-                        <path d="M11.5 10.5c-.667 1 -.667 2 0 3" />
-                      </svg>
+                        width={24}
+                        iconColor={"currentColor"}
+                      />
                       {Array.isArray(water.data.fish) && (
                         <p>
                           {water.data.fish.map((fish) => fish.label).join(", ")}
@@ -331,11 +275,6 @@ const Dashboard = () => {
                       )}
                     </div>
                   </div>
-                  {/* <button
-                    className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                    onClick={() => handleDetailsButton(water.data.id)}>
-                    Szczegóły
-                  </button> */}
                   <Link
                     className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                     to={`/dashboard/${water.data.id}`}>

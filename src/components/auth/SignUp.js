@@ -1,36 +1,60 @@
-import { auth } from "../../config/firebase";
+import { auth, db } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { collection, getDocs, query, addDoc } from "firebase/firestore";
 
 export const SignUp = () => {
   const [errorMessage, setErrorMessage] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
+  const usersCollectionRef = collection(db, "users");
 
   const history = useNavigate();
 
   const formik = useFormik({
     initialValues: {
       email: "",
+      username: "",
       password: "",
     },
     validationSchema: Yup.object({
       email: Yup.string()
         .email("Niepoprawny adres email")
         .required("Adres email jest wymagany"),
+      username: Yup.string()
+        .required("Nazwa użytkownika jest wymagana")
+        .min(5, "Minimalna długość nazwy użytkownika to 5 znaków"),
       password: Yup.string()
         .required("Hasło jest wymagane")
         .min(8, "Minimalna długość hasła to 8 znaków"),
     }),
     onSubmit: async () => {
       try {
-        await createUserWithEmailAndPassword(
+        await getUsers();
+        const matchingUsername = allUsers.find(
+          (user) => user.data.username === formik.values.username,
+        );
+
+        if (matchingUsername) {
+          setErrorMessage(
+            "Użytkownik o podanej nazwie użytkownika już istnieje",
+          );
+          return;
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(
           auth,
           formik.values.email,
           formik.values.password,
         );
-        history("/setUsername");
+        await addDoc(usersCollectionRef, {
+          UID: userCredential.user.uid,
+          username: formik.values.username,
+        });
+
+        history("/account");
       } catch (err) {
         switch (err.code) {
           case "auth/email-already-in-use":
@@ -40,6 +64,20 @@ export const SignUp = () => {
       }
     },
   });
+
+  const getUsers = async () => {
+    const q = query(collection(db, "users"));
+    const querySnapshot = await getDocs(q);
+    const userData = [];
+    querySnapshot.forEach((doc) => {
+      userData.push({ id: doc.id, data: doc.data() });
+    });
+    setAllUsers(userData);
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <>
@@ -57,7 +95,7 @@ export const SignUp = () => {
               </label>
               <input
                 className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                id="username"
+                id="email"
                 type="text"
                 placeholder="Email"
                 name="email"
@@ -68,6 +106,26 @@ export const SignUp = () => {
               {formik.touched.email && formik.errors.email ? (
                 <p className="text-xs italic text-red-500">
                   {formik.errors.email}
+                </p>
+              ) : null}
+            </div>
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-bold text-gray-700">
+                Nazwa użytkownika
+              </label>
+              <input
+                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                id="username"
+                type="text"
+                placeholder="Nazwa użytkownika"
+                name="username"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.username}
+              />
+              {formik.touched.username && formik.errors.username ? (
+                <p className="text-xs italic text-red-500">
+                  {formik.errors.username}
                 </p>
               ) : null}
             </div>

@@ -1,30 +1,11 @@
 import { useState } from "react";
 import Select from "react-select";
 import StrikeCallendar from "./StrikeCallendar";
+import { cityList } from "../cityList";
 
 const Home = () => {
   const [city, setCity] = useState("Warszawa");
   const [displayCity, setDisplayCity] = useState("Warszawa");
-
-  const cityList = [
-    { value: "Bialystok", label: "Białystok" },
-    { value: "Bydgoszcz", label: "Bydgoszcz" },
-    { value: "Gdańsk", label: "Gdańsk" },
-    { value: "Gorzów_Wielkopolski", label: "Gorzów Wielkopolski" },
-    { value: "Katowice", label: "Katowice" },
-    { value: "Kielce", label: "Kielce" },
-    { value: "Cracow", label: "Kraków" },
-    { value: "Lublin", label: "Lublin" },
-    { value: "Lodz", label: "Łódź" },
-    { value: "Olsztyn", label: "Olsztyn" },
-    { value: "Opole", label: "Opole" },
-    { value: "Poznan", label: "Poznań" },
-    { value: "Rzeszów", label: "Rzeszów" },
-    { value: "Szczecin", label: "Szczecin" },
-    { value: "Warszawa", label: "Warszawa" },
-    { value: "Wroclaw", label: "Wrocław" },
-    { value: "Zielona_Góra", label: "Zielona Góra" },
-  ];
 
   const handleVoivodeship = (data) => {
     setCity(data.value);
