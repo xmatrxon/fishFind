@@ -1,6 +1,7 @@
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StrikeCallendar from "./StrikeCallendar";
 
@@ -8,8 +9,19 @@ const WaterDetails = ({ authUser }) => {
   const [allWaterData, setAllWaterData] = useState([]);
   const [allComments, setAllComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-
+  const [allUsers, setAllUsers] = useState([]);
+  const [usernameAddedWater, setUsernameAddedWater] = useState("");
+  const [readyWaterData, setReadyWaterData] = useState(null);
+  const history = useNavigate();
   const { waterId } = useParams();
+
+  useEffect(() => {
+    if (allWaterData.length > 0) {
+      const userUID = allWaterData[0].data.UID;
+      const matchedUser = allUsers.find((user) => user.data.UID === userUID);
+      setUsernameAddedWater(matchedUser?.data.username || "");
+    }
+  }, [allWaterData, allUsers]);
 
   const fetchData = async () => {
     const q = query(collection(db, "markers"), where("id", "==", +waterId));
@@ -26,6 +38,26 @@ const WaterDetails = ({ authUser }) => {
     }
   };
 
+  const fetchUsers = async () => {
+    const q = query(collection(db, "users"));
+
+    try {
+      const querySnapshot = await getDocs(q);
+      const usersData = [];
+      querySnapshot.forEach((doc) => {
+        usersData.push({ id: doc.id, data: doc.data() });
+      });
+      setAllUsers(usersData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const findUsername = (uid) => {
+    const user = allUsers.find((user) => user.data.UID === uid);
+    return user ? user.data.username : "Nieznany użytkownik";
+  };
+
   const fetchComments = async () => {
     const q = query(
       collection(db, "comments"),
@@ -38,7 +70,6 @@ const WaterDetails = ({ authUser }) => {
       querySnapshot.forEach((doc) => {
         commentsData.push({ id: doc.id, data: doc.data() });
       });
-
       setAllComments(commentsData);
     } catch (err) {
       console.log(err);
@@ -47,23 +78,36 @@ const WaterDetails = ({ authUser }) => {
 
   useEffect(() => {
     fetchData();
+    fetchUsers();
     fetchComments();
-  }, [waterId]);
+  }, []);
 
   const handleNewComment = (event) => {
     setNewComment(event.target.value);
   };
 
-  const handleForm = async () => {
+  const handleForm = async (e) => {
+    e.preventDefault();
     const markersCollectionRef = collection(db, "comments");
+
+    const currentDate = new Date();
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+
+    const formattedDate = `${day}-${month}-${year}`;
 
     try {
       await addDoc(markersCollectionRef, {
         id: Date.now(),
-        waterId: waterId,
+        waterId: +waterId,
         comment: newComment,
+        UID: authUser.uid,
+        date: formattedDate,
       }).then(() => {
         setNewComment("");
+        history(0);
       });
     } catch (err) {
       console.log(err);
@@ -80,11 +124,12 @@ const WaterDetails = ({ authUser }) => {
               <p>Województwo: {allWaterData[0].data.voivodeship.label}</p>
               <p>Opis łowiska: {allWaterData[0].data.description}</p>
               <p>Regulamin łowiska: {allWaterData[0].data.rules}</p>
-              <p>Lat: {allWaterData[0].data.lat}</p>
-              <p>Lon: {allWaterData[0].data.lon}</p>
+              <p>Dodał łowisko: {usernameAddedWater}</p>
               {allComments.map((comment) => (
-                <div key={comment.data.id} className=" bg-white">
+                <div key={comment.data.id} className="bg-white">
                   <p>Comment: {comment.data.comment}</p>
+                  <p>Data: {comment.data.date}</p>
+                  <p>Username: {findUsername(comment.data.UID)}</p>
                 </div>
               ))}
               <p>Brania na łowisku</p>
@@ -97,7 +142,7 @@ const WaterDetails = ({ authUser }) => {
             </div>
             {authUser ? (
               <div>
-                <form className="">
+                <form>
                   <div className="mb-4 pt-6">
                     <label className="mb-2 block text-sm font-bold text-gray-700">
                       Dodaj komentarz
@@ -113,19 +158,39 @@ const WaterDetails = ({ authUser }) => {
                   </div>
                   <div>
                     <button
-                      className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                      onClick={handleForm}>
+                      onClick={handleForm}
+                      className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
                       Dodaj
                     </button>
                   </div>
                 </form>
               </div>
-            ) : null}
+            ) : (
+              <p>Aby dodać komentarz należy być zalogowanym</p>
+            )}
           </>
         ) : (
           <>
-            <p>Ładowanie...</p>
-            <p>{waterId}</p>
+            <div className="flex h-[calc(100vh-48px)] items-center justify-center">
+              <p className="pr-3">Ładowanie </p>
+              <svg
+                className="-ml-1 mr-3 h-5 w-5 animate-spin text-black"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
           </>
         )}
       </div>

@@ -29,9 +29,8 @@ L.Icon.Default.mergeOptions({
   iconUrl: require("leaflet/dist/images/marker-icon.png"),
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
-const markersCollectionRef = collection(db, "markers");
 
-const Map = () => {
+const Map = ({ authUser }) => {
   const [markersVisible, setMarkersVisible] = useState(true);
   const [popupVisible, setPopupVisible] = useState(false);
   const [markers, setMarkers] = useState([]);
@@ -39,7 +38,7 @@ const Map = () => {
   const [markerLng, setMarkerLng] = useState();
   const [clickedWaterId, setClickedWaterId] = useState(null);
   const [voivodeships, setVoivodeships] = useState([]);
-  const [allWaterData, setAllWaterData] = useState([]);
+  const [userID, setUserID] = useState();
 
   const maxBounds = [
     [54.868323814195975, 13.503610861651275],
@@ -48,17 +47,13 @@ const Map = () => {
 
   useEffect(() => {
     const getMarkers = async () => {
-      const data = await getDocs(markersCollectionRef);
-      setMarkers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    const getMM = async () => {
       const q = query(collection(db, "markers"));
       const querySnapshot = await getDocs(q);
-      const waterData = [];
+      const markersData = [];
       querySnapshot.forEach((doc) => {
-        waterData.push({ id: doc.id, data: doc.data() });
+        markersData.push({ id: doc.id, data: doc.data() });
       });
-      setAllWaterData(waterData);
+      setMarkers(markersData);
     };
 
     const fetchVoivodeships = async () => {
@@ -98,7 +93,6 @@ const Map = () => {
       }
     };
 
-    getMM();
     getMarkers();
     fetchVoivodeships();
   }, [popupVisible]);
@@ -119,31 +113,37 @@ const Map = () => {
   const AddMarker = () => {
     useMapEvents({
       click: async (e) => {
-        const clickedLatLng = e.latlng;
-        setMarkerLat(clickedLatLng.lat);
-        setMarkerLng(clickedLatLng.lng);
+        if (authUser) {
+          setUserID(authUser.uid);
+          const clickedLatLng = e.latlng;
+          setMarkerLat(clickedLatLng.lat);
+          setMarkerLng(clickedLatLng.lng);
 
-        const isInsideAnyVoivodeship = voivodeships.some((voivodeship) => {
-          return voivodeship.data.features.some((feature) => {
-            const coordinates = feature.geometry.coordinates[0];
-            if (
-              pointInPolygon(
-                [clickedLatLng.lng, clickedLatLng.lat],
-                coordinates,
-              )
-            ) {
-              setClickedWaterId(feature.properties["@id"]);
-              return true;
-            }
-            return false;
+          const isInsideAnyVoivodeship = voivodeships.some((voivodeship) => {
+            return voivodeship.data.features.some((feature) => {
+              const coordinates = feature.geometry.coordinates[0];
+              if (
+                pointInPolygon(
+                  [clickedLatLng.lng, clickedLatLng.lat],
+                  coordinates,
+                )
+              ) {
+                setClickedWaterId(feature.properties["@id"]);
+                return true;
+              }
+              return false;
+            });
           });
-        });
 
-        if (isInsideAnyVoivodeship) {
-          setPopupVisible(true);
-          // console.log(`Id zbiornika: ${clickedWaterId}`);
+          if (isInsideAnyVoivodeship) {
+            setPopupVisible(true);
+          } else {
+            alert(
+              "Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym",
+            );
+          }
         } else {
-          alert("Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym");
+          alert("Aby dodać łowisko należy się zalogować");
         }
       },
     });
@@ -161,8 +161,6 @@ const Map = () => {
       );
     }
   };
-
-  console.log(allWaterData);
 
   return (
     <>
@@ -195,7 +193,7 @@ const Map = () => {
           {/* <GeoJSON data={slaskie.features} onEachFeature={onEachWater} /> */}
           {markersVisible ? (
             <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
-              {allWaterData.map((water) => (
+              {markers.map((water) => (
                 <Marker
                   key={water.id}
                   position={[water.data.lat, water.data.lon]}>
@@ -222,6 +220,7 @@ const Map = () => {
         lng={markerLng}
         clickedWaterId={clickedWaterId}
         pass={closePopup}
+        uid={userID}
       />
     </>
   );

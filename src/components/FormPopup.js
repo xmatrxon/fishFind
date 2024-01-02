@@ -45,6 +45,7 @@ const FormPopup = (props) => {
           lon: props.lng,
           lat: props.lat,
           waterId: props.clickedWaterId,
+          UID: props.uid,
         }).then(() => {
           props.pass(true);
           formik.resetForm();

@@ -40,7 +40,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/map" element={<Map />} />
+          <Route path="/map" element={<Map authUser={authUser} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/dashboard/:waterId"
