@@ -58,9 +58,13 @@ const Dashboard = () => {
     let q = null;
 
     if (name && !voivodeship && !fish) {
+      const endName =
+        name.slice(0, -1) +
+        String.fromCharCode(name.charCodeAt(name.length - 1) + 1);
       q = query(
         collection(db, "markers"),
-        where("name", "==", name),
+        where("name", ">=", name),
+        where("name", "<", endName),
         orderBy("name"),
       );
     } else if (voivodeship && !name && !fish) {
@@ -213,6 +217,10 @@ const Dashboard = () => {
     setDetailsId(data);
   };
 
+  const capitalizeFirstLetter = (input) => {
+    return input.charAt(0).toUpperCase() + input.slice(1);
+  };
+
   return (
     <>
       {isClickedDeatailsButton ? (
@@ -229,7 +237,9 @@ const Dashboard = () => {
                     type="text"
                     placeholder="Nazwa łowiska"
                     name="name"
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) =>
+                      setName(capitalizeFirstLetter(e.target.value))
+                    }
                   />
                   <Select
                     className="mr-10 w-3/12"
@@ -256,32 +266,38 @@ const Dashboard = () => {
               </form>
             </div>
             <div className="px-10">
-              {allWaterData.map((water) => (
-                <div
-                  key={water.data.id}
-                  className="mb-5 flex h-full justify-between rounded-lg bg-purple-300 px-10 py-3">
-                  <div className="w-full">
-                    <p>{water.data.name}</p>
-                    <div className="flex w-full">
-                      <FishIcon
-                        height={24}
-                        width={24}
-                        iconColor={"currentColor"}
-                      />
-                      {Array.isArray(water.data.fish) && (
-                        <p>
-                          {water.data.fish.map((fish) => fish.label).join(", ")}
-                        </p>
-                      )}
+              {allWaterData.length > 0 ? (
+                allWaterData.map((water) => (
+                  <div
+                    key={water.data.id}
+                    className="mb-5 flex h-full justify-between rounded-lg bg-purple-300 px-10 py-3">
+                    <div className="w-full">
+                      <p>{water.data.name}</p>
+                      <div className="flex w-full">
+                        <FishIcon
+                          height={24}
+                          width={24}
+                          iconColor={"currentColor"}
+                        />
+                        {Array.isArray(water.data.fish) && (
+                          <p>
+                            {water.data.fish
+                              .map((fish) => fish.label)
+                              .join(", ")}
+                          </p>
+                        )}
+                      </div>
                     </div>
+                    <Link
+                      className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                      to={`/dashboard/${water.data.id}`}>
+                      Szczegóły
+                    </Link>
                   </div>
-                  <Link
-                    className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                    to={`/dashboard/${water.data.id}`}>
-                    Szczegóły
-                  </Link>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>Brak łowisk</p>
+              )}
               <div className="mt-4 flex justify-center">
                 <button
                   onClick={previous}

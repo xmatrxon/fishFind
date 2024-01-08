@@ -1,9 +1,10 @@
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StrikeCallendar from "./StrikeCallendar";
+import UserIcon from "./UserIcon";
 
 const WaterDetails = ({ authUser }) => {
   const [allWaterData, setAllWaterData] = useState([]);
@@ -11,7 +12,7 @@ const WaterDetails = ({ authUser }) => {
   const [newComment, setNewComment] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [usernameAddedWater, setUsernameAddedWater] = useState("");
-  const [readyWaterData, setReadyWaterData] = useState(null);
+
   const history = useNavigate();
   const { waterId } = useParams();
 
@@ -56,6 +57,11 @@ const WaterDetails = ({ authUser }) => {
   const findUsername = (uid) => {
     const user = allUsers.find((user) => user.data.UID === uid);
     return user ? user.data.username : "Nieznany użytkownik";
+  };
+
+  const findColor = (uid) => {
+    const user = allUsers.find((user) => user.data.UID === uid);
+    return user ? user.data.avatarColor : "Nieznany użytkownik";
   };
 
   const fetchComments = async () => {
@@ -124,12 +130,32 @@ const WaterDetails = ({ authUser }) => {
               <p>Województwo: {allWaterData[0].data.voivodeship.label}</p>
               <p>Opis łowiska: {allWaterData[0].data.description}</p>
               <p>Regulamin łowiska: {allWaterData[0].data.rules}</p>
+              <p>
+                Ryby występujące na łowisku:
+                {allWaterData[0].data.fish.map((fish) => fish.label).join(", ")}
+              </p>
+
               <p>Dodał łowisko: {usernameAddedWater}</p>
               {allComments.map((comment) => (
-                <div key={comment.data.id} className="bg-white">
-                  <p>Comment: {comment.data.comment}</p>
-                  <p>Data: {comment.data.date}</p>
-                  <p>Username: {findUsername(comment.data.UID)}</p>
+                <div
+                  key={comment.data.id}
+                  className="flex flex-col justify-center bg-white">
+                  <div>
+                    <p>Comment: {comment.data.comment}</p>
+                  </div>
+                  <div>
+                    <p>Data: {comment.data.date}</p>
+                  </div>
+                  <div>
+                    <p>Username: {findUsername(comment.data.UID)} </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <UserIcon
+                      width={24}
+                      height={24}
+                      iconColor={findColor(comment.data.UID)}
+                    />
+                  </div>
                 </div>
               ))}
               <p>Brania na łowisku</p>

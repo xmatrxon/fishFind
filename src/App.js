@@ -6,7 +6,6 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Map from "./components/Map";
 import Dashboard from "./components/Dashboard";
-import Account from "./components/Account";
 import { SignUp } from "./components/auth/SignUp";
 import { SignIn } from "./components/auth/SignIn";
 import Logout from "./components/auth/Logout";
@@ -16,6 +15,10 @@ import { useEffect, useState } from "react";
 import ChangePassword from "./components/ChangePassword";
 import ChangeUsername from "./components/ChangeUsername";
 import WaterDetails from "./components/WaterDetails";
+import NotFound from "./components/NotFound";
+import PrivateRoutes from "./components/PrivateRoutes";
+import PublicRoutes from "./components/PublicRoutes";
+import { UserFetch } from "./components/UserFetch";
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -46,19 +49,29 @@ function App() {
             path="/dashboard/:waterId"
             element={<WaterDetails authUser={authUser} />}
           />
-          <Route path="/account" element={<Account authUser={authUser} />} />
-          <Route path="/signup" element={<SignUp authUser={authUser} />} />
-          <Route path="/signin" element={<SignIn authUser={authUser} />} />
           <Route path="/reset" element={<ResetPassword />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route
-            path="/changePassword"
-            element={<ChangePassword authUser={authUser} />}
-          />
-          <Route
-            path="/changeUsername"
-            element={<ChangeUsername authUser={authUser} />}
-          />
+          <Route path="*" element={<NotFound />} />
+
+          <Route element={<PrivateRoutes authUser={authUser} />}>
+            <Route path="/logout" element={<Logout />} />
+            <Route
+              path="/changePassword"
+              element={<ChangePassword authUser={authUser} />}
+            />
+            <Route
+              path="/changeUsername"
+              element={<ChangeUsername authUser={authUser} />}
+            />
+            <Route
+              path="/account"
+              element={<UserFetch authUser={authUser} />}
+            />
+          </Route>
+
+          <Route element={<PublicRoutes authUser={authUser} />}>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+          </Route>
         </Routes>
       </div>
     </>

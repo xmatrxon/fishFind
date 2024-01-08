@@ -2,6 +2,7 @@ import { auth, db } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import Select from "react-select";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, addDoc } from "firebase/firestore";
@@ -10,8 +11,16 @@ export const SignUp = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const usersCollectionRef = collection(db, "users");
+  const [avatarColor, setAvatarColor] = useState("green");
+  const [clickedButton, setClickedButton] = useState(false);
 
   const history = useNavigate();
+
+  const avatarColors = [
+    { value: "green", label: "Zielony" },
+    { value: "blue", label: "Niebieski" },
+    { value: "red", label: "Czerwony" },
+  ];
 
   const formik = useFormik({
     initialValues: {
@@ -29,6 +38,7 @@ export const SignUp = () => {
       password: Yup.string()
         .required("Hasło jest wymagane")
         .min(8, "Minimalna długość hasła to 8 znaków"),
+      avatarColor: Yup.string().required("Kolor awatara jest wymagany"),
     }),
     onSubmit: async () => {
       try {
@@ -52,6 +62,7 @@ export const SignUp = () => {
         await addDoc(usersCollectionRef, {
           UID: userCredential.user.uid,
           username: formik.values.username,
+          avatarColor: avatarColor.value,
         });
 
         history("/account");
@@ -78,6 +89,12 @@ export const SignUp = () => {
   useEffect(() => {
     getUsers();
   }, []);
+
+  const handleAvatarColor = (data) => {
+    setAvatarColor(data);
+    formik.setFieldValue("avatarColor", data.value);
+    formik.setFieldTouched("avatarColor", true);
+  };
 
   return (
     <>
@@ -149,10 +166,31 @@ export const SignUp = () => {
                 </p>
               ) : null}
             </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-bold text-gray-700">
+                Wybierz avatar
+              </label>
+              <Select
+                className=""
+                options={avatarColors}
+                placeholder="Kolor"
+                value={avatarColor}
+                onChange={handleAvatarColor}
+                onBlur={formik.handleBlur}
+                isMulti={false}
+              />
+              {(formik.touched.avatarColor || clickedButton) &&
+              formik.errors.avatarColor ? (
+                <p className="text-xs italic text-red-500">
+                  {formik.errors.avatarColor}
+                </p>
+              ) : null}
+            </div>
             <div>
               <button
                 className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                type="submit">
+                type="submit"
+                onClick={() => setClickedButton(true)}>
                 Zarejestruj się
               </button>
             </div>

@@ -94,7 +94,16 @@ const FormPopup = (props) => {
               type="text"
               placeholder="Nazwa łowiska"
               name="name"
-              onChange={formik.handleChange}
+              onChange={(e) =>
+                formik.handleChange({
+                  target: {
+                    name: "name",
+                    value:
+                      e.target.value.charAt(0).toUpperCase() +
+                      e.target.value.slice(1),
+                  },
+                })
+              }
               onBlur={formik.handleBlur}
               value={formik.values.name}
             />

@@ -12,7 +12,7 @@ const StrikeCallendar = ({ lat, lon, city }) => {
     if (city) {
       try {
         const response = await fetch(
-          `http://api.weatherapi.com/v1/forecast.json?key=${api_Key}&q=${city}&days=5`,
+          `https://api.weatherapi.com/v1/forecast.json?key=${api_Key}&q=${city}&days=5`,
         );
         const data = await response.json();
         setWeather(data);
@@ -22,7 +22,7 @@ const StrikeCallendar = ({ lat, lon, city }) => {
     } else {
       try {
         const response = await fetch(
-          `http://api.weatherapi.com/v1/forecast.json?key=${api_Key}&q=${lat},${lon}&days=5`,
+          `https://api.weatherapi.com/v1/forecast.json?key=${api_Key}&q=${lat},${lon}&days=5`,
         );
         const data = await response.json();
         setWeather(data);

@@ -3,6 +3,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+import UserIcon from "./UserIcon";
 
 export const UserFetch = ({ authUser }) => {
   const [userData, setUserData] = useState(null);
@@ -46,13 +47,21 @@ export const UserFetch = ({ authUser }) => {
             <h1 className="border-silver border-b-2 border-solid pb-4">
               Twoje dane
             </h1>
-            <div>
-              <p className="my-5 text-xl">{`Adres email: ${authUser.email}`}</p>
-            </div>
+
             <div>
               {userData &&
                 userData.map((user) => (
                   <div key={user.id}>
+                    <div className="my-5 flex justify-center">
+                      <UserIcon
+                        width={48}
+                        height={48}
+                        iconColor={user.data.avatarColor}
+                      />
+                    </div>
+                    <div>
+                      <p className="my-5 text-xl">{`Adres email: ${authUser.email}`}</p>
+                    </div>
                     <p className="my-5 text-xl">
                       Nazwa użytkownika: {user.data.username}
                     </p>
