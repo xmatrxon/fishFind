@@ -5,11 +5,10 @@ import { useFormik } from "formik";
 import Select from "react-select";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, addDoc, where } from "firebase/firestore";
 
 export const SignUp = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const [allUsers, setAllUsers] = useState([]);
   const usersCollectionRef = collection(db, "users");
   const [avatarColor, setAvatarColor] = useState("green");
   const [clickedButton, setClickedButton] = useState(false);
@@ -21,6 +20,8 @@ export const SignUp = () => {
     { value: "blue", label: "Niebieski" },
     { value: "red", label: "Czerwony" },
   ];
+
+  let existingUser = false;
 
   const formik = useFormik({
     initialValues: {
@@ -43,11 +44,8 @@ export const SignUp = () => {
     onSubmit: async () => {
       try {
         await getUsers();
-        const matchingUsername = allUsers.find(
-          (user) => user.data.username === formik.values.username,
-        );
 
-        if (matchingUsername) {
+        if (existingUser) {
           setErrorMessage(
             "Użytkownik o podanej nazwie użytkownika już istnieje",
           );
@@ -77,13 +75,19 @@ export const SignUp = () => {
   });
 
   const getUsers = async () => {
-    const q = query(collection(db, "users"));
+    const q = query(
+      collection(db, "users"),
+      where("username", "==", formik.values.username),
+    );
     const querySnapshot = await getDocs(q);
     const userData = [];
     querySnapshot.forEach((doc) => {
       userData.push({ id: doc.id, data: doc.data() });
     });
-    setAllUsers(userData);
+
+    if (userData.length > 0) {
+      existingUser = true;
+    }
   };
 
   useEffect(() => {
