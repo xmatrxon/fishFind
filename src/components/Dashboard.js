@@ -15,7 +15,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { Link } from "react-router-dom";
-import WaterDetails from "./WaterDetails";
 import { voivodeshipList } from "../voivodeshipList";
 import { fishList } from "../fishList";
 import FishIcon from "./FishIcon";

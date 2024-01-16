@@ -6,10 +6,16 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  endBefore,
+  orderBy,
+  limitToLast,
+  getCountFromServer,
+  startAfter,
+  limit,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import StrikeCallendar from "./StrikeCallendar";
 import UserIcon from "./UserIcon";
@@ -23,10 +29,35 @@ const WaterDetails = ({ authUser }) => {
   const [usernameAddedWater, setUsernameAddedWater] = useState("");
   const [canEdit, setCanEdit] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+
+  const [lastDoc, setLastDoc] = useState(null);
+  const [pageDown, setPageDown] = useState(0);
+  const [pageBack, setPageBack] = useState(0);
+  const [firstDoc, setFirstDoc] = useState(null);
+  const [hasPrevPage, setHasPrevPage] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [helper, setHelper] = useState(0);
+
+  const firstRender = useRef(true);
 
   const history = useNavigate();
   const { waterId } = useParams();
+
+  let modulo = null;
+
+  const checkCommentsLength = async () => {
+    const q = query(
+      collection(db, "comments"),
+      where("waterId", "==", +waterId),
+    );
+
+    try {
+      const querySnapshot = await getCountFromServer(q);
+      modulo = querySnapshot.data().count;
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     if (allWaterData.length > 0) {
@@ -46,13 +77,6 @@ const WaterDetails = ({ authUser }) => {
         waterData.push({ id: doc.id, data: doc.data() });
       });
       setAllWaterData(waterData);
-
-      if (authUser && findRole(authUser.uid) === "admin") {
-        setCanEdit(true);
-        setIsAdmin(true);
-      } else if (authUser && authUser.uid === waterData[0].data.UID) {
-        setCanEdit(true);
-      }
     } catch (err) {
       console.log(err);
     }
@@ -89,9 +113,14 @@ const WaterDetails = ({ authUser }) => {
   };
 
   const fetchComments = async () => {
+    await checkCommentsLength();
+
     const q = query(
       collection(db, "comments"),
       where("waterId", "==", +waterId),
+      orderBy("date"),
+      startAfter(lastDoc),
+      limit(3),
     );
 
     try {
@@ -101,27 +130,42 @@ const WaterDetails = ({ authUser }) => {
         commentsData.push({ id: doc.id, data: doc.data() });
       });
       setAllComments(commentsData);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setFirstDoc(querySnapshot.docs[0]);
+      setHelper((prevHeler) => prevHeler + 3);
+      setHasNextPage(querySnapshot.docs.length === 3);
+      if (helper === modulo || modulo === 3) {
+        setHasNextPage(false);
+      }
     } catch (err) {
       console.log(err);
     }
   };
-
   useEffect(() => {
+    checkCommentsLength();
     fetchData();
     fetchUsers();
-    fetchComments();
   }, []);
 
   useEffect(() => {
+    checkCommentsLength();
+    fetchComments();
+  }, [pageDown]);
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+
     if (allWaterData.length > 0) {
       if (findRole(authUser.uid) == "admin") {
         setCanEdit(true);
-        setIsAdmin(true);
       } else if (authUser.uid == allWaterData[0].data.UID) {
         setCanEdit(true);
       }
     }
-  }, [allWaterData]);
+  }, [allWaterData, authUser]);
 
   const handleNewComment = (event) => {
     setNewComment(event.target.value);
@@ -210,6 +254,47 @@ const WaterDetails = ({ authUser }) => {
     }
   };
 
+  const paginate = () => {
+    setPageDown((prevPage) => prevPage + 1);
+    setPageBack((prevPage) => prevPage + 1);
+    setHasPrevPage(true);
+  };
+
+  const previous = async () => {
+    if (pageBack <= 1) {
+      setPageBack(0);
+    } else {
+      setPageBack((prevPage) => prevPage - 1);
+    }
+    const q = query(
+      collection(db, "comments"),
+      where("waterId", "==", +waterId),
+      orderBy("date"),
+      endBefore(firstDoc),
+      limitToLast(3),
+    );
+
+    try {
+      const querySnapshot = await getDocs(q);
+      const commentsData = [];
+      querySnapshot.forEach((doc) => {
+        commentsData.push({ id: doc.id, data: doc.data() });
+      });
+      setAllComments(commentsData);
+      setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setFirstDoc(querySnapshot.docs[0]);
+      setHelper((prevHeler) => prevHeler - 3);
+      if (pageBack > 1) {
+        setHasPrevPage(true);
+      } else {
+        setHasPrevPage(false);
+      }
+      setHasNextPage(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col justify-center">
@@ -253,7 +338,7 @@ const WaterDetails = ({ authUser }) => {
                   <div>
                     <p>Username: {findUsername(comment.data.UID)} </p>
                   </div>
-                  {isAdmin ? (
+                  {findRole(authUser.uid) == "admin" ? (
                     <div>
                       <button
                         onClick={() => deleteComment(comment.data.id)}
@@ -308,6 +393,27 @@ const WaterDetails = ({ authUser }) => {
             ) : (
               <p>Aby dodać komentarz należy być zalogowanym</p>
             )}
+            {allComments.length > 0 ? (
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={previous}
+                  className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
+                    hasPrevPage ? "" : "cursor-not-allowed opacity-50"
+                  }`}
+                  disabled={!hasPrevPage}>
+                  Poprzednia strona
+                </button>
+                <button
+                  onClick={paginate}
+                  className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
+                    hasNextPage ? "" : "cursor-not-allowed opacity-50"
+                  }`}
+                  disabled={!hasNextPage}>
+                  Następna strona
+                </button>
+              </div>
+            ) : null}
+
             <WaterEditPopup
               trigger={popupVisible}
               setTrigger={setPopupVisible}
