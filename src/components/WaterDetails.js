@@ -1,10 +1,19 @@
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StrikeCallendar from "./StrikeCallendar";
 import UserIcon from "./UserIcon";
+import WaterEditPopup from "./WaterEditPopup";
 
 const WaterDetails = ({ authUser }) => {
   const [allWaterData, setAllWaterData] = useState([]);
@@ -12,6 +21,9 @@ const WaterDetails = ({ authUser }) => {
   const [newComment, setNewComment] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [usernameAddedWater, setUsernameAddedWater] = useState("");
+  const [canEdit, setCanEdit] = useState(false);
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const history = useNavigate();
   const { waterId } = useParams();
@@ -34,6 +46,13 @@ const WaterDetails = ({ authUser }) => {
         waterData.push({ id: doc.id, data: doc.data() });
       });
       setAllWaterData(waterData);
+
+      if (authUser && findRole(authUser.uid) === "admin") {
+        setCanEdit(true);
+        setIsAdmin(true);
+      } else if (authUser && authUser.uid === waterData[0].data.UID) {
+        setCanEdit(true);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -57,6 +76,11 @@ const WaterDetails = ({ authUser }) => {
   const findUsername = (uid) => {
     const user = allUsers.find((user) => user.data.UID === uid);
     return user ? user.data.username : "Nieznany użytkownik";
+  };
+
+  const findRole = (uid) => {
+    const user = allUsers.find((user) => user.data.UID === uid);
+    return user ? user.data.role : "Nieznana rola";
   };
 
   const findColor = (uid) => {
@@ -88,8 +112,74 @@ const WaterDetails = ({ authUser }) => {
     fetchComments();
   }, []);
 
+  useEffect(() => {
+    if (allWaterData.length > 0) {
+      if (findRole(authUser.uid) == "admin") {
+        setCanEdit(true);
+        setIsAdmin(true);
+      } else if (authUser.uid == allWaterData[0].data.UID) {
+        setCanEdit(true);
+      }
+    }
+  }, [allWaterData]);
+
   const handleNewComment = (event) => {
     setNewComment(event.target.value);
+  };
+
+  const closePopup = (data) => {
+    setPopupVisible(data.value);
+  };
+
+  const handleEdit = () => {
+    setPopupVisible(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const markerId = allWaterData[0].id;
+      await deleteDoc(doc(db, "markers", markerId));
+
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "comments"),
+          where("waterId", "==", allWaterData[0].data.id),
+        ),
+      );
+
+      if (!querySnapshot.empty) {
+        const deletePromises = querySnapshot.docs.map(async (doc) => {
+          await deleteDoc(doc.ref);
+        });
+
+        await Promise.all(deletePromises);
+      } else {
+        console.log("Nie znaleziono komentarzy");
+      }
+      history("/dashboard");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteComment = async (data) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "comments"), where("id", "==", data)),
+      );
+
+      if (!querySnapshot.empty) {
+        const commentRef = querySnapshot.docs[0].ref;
+
+        await deleteDoc(commentRef);
+
+        history(0);
+      } else {
+        console.log("Komentarz nie znaleziony");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleForm = async (e) => {
@@ -136,6 +226,20 @@ const WaterDetails = ({ authUser }) => {
               </p>
 
               <p>Dodał łowisko: {usernameAddedWater}</p>
+              {canEdit ? (
+                <button
+                  onClick={handleEdit}
+                  className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
+                  Edytuj
+                </button>
+              ) : null}
+              {findRole(authUser.uid) == "admin" ? (
+                <button
+                  onClick={handleDelete}
+                  className="focus:shadow-outline mb-6 ml-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
+                  Usuń
+                </button>
+              ) : null}
               {allComments.map((comment) => (
                 <div
                   key={comment.data.id}
@@ -149,6 +253,16 @@ const WaterDetails = ({ authUser }) => {
                   <div>
                     <p>Username: {findUsername(comment.data.UID)} </p>
                   </div>
+                  {isAdmin ? (
+                    <div>
+                      <button
+                        onClick={() => deleteComment(comment.data.id)}
+                        className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
+                        Usuń komentarz
+                      </button>
+                    </div>
+                  ) : null}
+
                   <div className="flex justify-center">
                     <UserIcon
                       width={24}
@@ -160,10 +274,10 @@ const WaterDetails = ({ authUser }) => {
               ))}
               <p>Brania na łowisku</p>
               <div className="flex justify-center">
-                <StrikeCallendar
+                {/* <StrikeCallendar
                   lat={allWaterData[0].data.lat}
                   lon={allWaterData[0].data.lon}
-                />
+                /> */}
               </div>
             </div>
             {authUser ? (
@@ -194,6 +308,12 @@ const WaterDetails = ({ authUser }) => {
             ) : (
               <p>Aby dodać komentarz należy być zalogowanym</p>
             )}
+            <WaterEditPopup
+              trigger={popupVisible}
+              setTrigger={setPopupVisible}
+              waterId={allWaterData[0].id}
+              pass={closePopup}
+            />
           </>
         ) : (
           <>

@@ -61,6 +61,7 @@ export const SignUp = () => {
           UID: userCredential.user.uid,
           username: formik.values.username,
           avatarColor: avatarColor.value,
+          role: "user",
         });
 
         history("/account");

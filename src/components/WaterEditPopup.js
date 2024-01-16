@@ -1,58 +1,54 @@
 import { useState } from "react";
 import Select from "react-select";
 import { db } from "../config/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { updateDoc, doc } from "firebase/firestore";
 import { useFormik } from "formik";
-import { voivodeshipList } from "../voivodeshipList";
 import { fishList } from "../fishList";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 
-const FormPopup = (props) => {
-  const [voivodeship, setVoivodeship] = useState("");
+const WaterEditPopup = (props) => {
   const [fish, setFish] = useState("");
-
   const [clickedButton, setClickedButton] = useState(false);
+  const history = useNavigate();
 
   const formik = useFormik({
     initialValues: {
-      name: "",
       description: "",
       rules: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string()
-        .max(30, "Maksymalna ilość znaków to 30")
-        .required("Nazwa łowiska jest wymagana"),
-      description: Yup.string()
-        .required("Opis łowiska jest wymagany")
-        .max(300, "Maksymalna ilość znaków to 300"),
-      rules: Yup.string()
-        .required("Regulamin łowiska jest wymagany")
-        .max(300, "Maksymalna ilość znaków to 300"),
-      voivodeship: Yup.string().required("Województwo jest wymagane"),
-      fish: Yup.array().required("Conajmniej jeden gatunek jest wymagany"),
+      description: Yup.string().max(300, "Maksymalna ilość znaków to 300"),
+      rules: Yup.string().max(300, "Maksymalna ilość znaków to 300"),
     }),
     onSubmit: async () => {
-      const markersCollectionRef = collection(db, "markers");
+      const markersCollectionRef = doc(db, "markers", props.waterId);
 
       try {
-        await addDoc(markersCollectionRef, {
-          id: Date.now(),
-          name: formik.values.name,
-          voivodeship: voivodeship,
-          description: formik.values.description,
-          rules: formik.values.rules,
-          fish: fish,
-          lon: props.lng,
-          lat: props.lat,
-          waterId: props.clickedWaterId,
-          UID: props.uid,
-        }).then(() => {
-          props.pass(true);
-          formik.resetForm();
-          setFish("");
-          setVoivodeship("");
-        });
+        const updateData = {};
+
+        if (formik.values.description.trim() !== "") {
+          updateData.description = formik.values.description.trim();
+        }
+
+        if (formik.values.rules.trim() !== "") {
+          updateData.rules = formik.values.rules.trim();
+        }
+
+        if (Object.keys(fish).length > 0) {
+          updateData.fish = fish;
+        }
+
+        if (Object.keys(updateData).length > 0) {
+          await updateDoc(markersCollectionRef, updateData).then(() => {
+            props.pass(true);
+            formik.resetForm();
+            setFish("");
+            history(0);
+          });
+        } else {
+          alert("Wszystkie pola są puste");
+        }
       } catch (err) {
         console.log(err);
       }
@@ -64,12 +60,6 @@ const FormPopup = (props) => {
     const selectedFishValues = data.map((fishOption) => fishOption.value);
     formik.setFieldValue("fish", selectedFishValues);
     formik.setFieldTouched("fish", true);
-  };
-
-  const handleVoivodeship = (data) => {
-    setVoivodeship(data);
-    formik.setFieldValue("voivodeship", data.value);
-    formik.setFieldTouched("voivodeship", true);
   };
 
   return props.trigger ? (
@@ -101,32 +91,6 @@ const FormPopup = (props) => {
                 <path d="M6 6l12 12" />
               </svg>
             </button>
-          </div>
-          <div className="mb-4">
-            <input
-              className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-              id="name"
-              type="text"
-              placeholder="Nazwa łowiska"
-              name="name"
-              onChange={(e) =>
-                formik.handleChange({
-                  target: {
-                    name: "name",
-                    value:
-                      e.target.value.charAt(0).toUpperCase() +
-                      e.target.value.slice(1),
-                  },
-                })
-              }
-              onBlur={formik.handleBlur}
-              value={formik.values.name}
-            />
-            {formik.touched.name && formik.errors.name ? (
-              <p className="text-xs italic text-red-500">
-                {formik.errors.name}
-              </p>
-            ) : null}
           </div>
           <div className="mb-4">
             <input
@@ -166,23 +130,6 @@ const FormPopup = (props) => {
           <div className="mb-4">
             <Select
               className=""
-              options={voivodeshipList}
-              placeholder="Województwo"
-              value={voivodeship}
-              onChange={handleVoivodeship}
-              onBlur={formik.handleBlur}
-              isMulti={false}
-            />
-            {(formik.touched.voivodeship || clickedButton) &&
-            formik.errors.voivodeship ? (
-              <p className="text-xs italic text-red-500">
-                {formik.errors.voivodeship}
-              </p>
-            ) : null}
-          </div>
-          <div className="mb-4">
-            <Select
-              className=""
               options={fishList}
               placeholder="Występujące ryby"
               value={fish}
@@ -201,7 +148,7 @@ const FormPopup = (props) => {
               className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
               type="submit"
               onClick={() => setClickedButton(true)}>
-              Dodaj
+              Edytuj
             </button>
           </div>
         </form>
@@ -209,5 +156,4 @@ const FormPopup = (props) => {
     </div>
   ) : null;
 };
-
-export default FormPopup;
+export default WaterEditPopup;
