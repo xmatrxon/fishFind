@@ -6,6 +6,7 @@ import Select from "react-select";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, addDoc, where } from "firebase/firestore";
+import Footer from "../Footer";
 
 export const SignUp = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -103,7 +104,7 @@ export const SignUp = () => {
 
   return (
     <>
-      <div className="flex h-screen w-screen justify-center">
+      <div className="flex h-screen w-full justify-center">
         <div className="w-2/5 self-center">
           <form
             onSubmit={formik.handleSubmit}
@@ -220,6 +221,7 @@ export const SignUp = () => {
           </form>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

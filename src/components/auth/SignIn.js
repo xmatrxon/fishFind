@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
+import Footer from "../Footer";
 
 export const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,7 +41,7 @@ export const SignIn = () => {
 
   return (
     <>
-      <div className="flex h-screen w-screen justify-center">
+      <div className="flex h-screen w-full justify-center">
         <div className="w-2/5 self-center">
           <form
             onSubmit={formik.handleSubmit}
@@ -131,6 +132,7 @@ export const SignIn = () => {
           </form>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

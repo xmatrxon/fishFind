@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { collection, getDocs, query } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import Footer from "./Footer";
 
 const ChangeUsername = ({ authUser }) => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -66,7 +67,7 @@ const ChangeUsername = ({ authUser }) => {
     <>
       {authUser ? (
         <>
-          <div className="flex h-screen w-screen justify-center">
+          <div className="flex h-screen w-full justify-center">
             <div className="w-2/5 self-center">
               <form
                 onSubmit={formik.handleSubmit}
@@ -124,6 +125,7 @@ const ChangeUsername = ({ authUser }) => {
           </div>
         </>
       ) : null}
+      <Footer />
     </>
   );
 };

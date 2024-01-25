@@ -20,6 +20,7 @@ import { useParams } from "react-router-dom";
 import StrikeCallendar from "./StrikeCallendar";
 import UserIcon from "./UserIcon";
 import WaterEditPopup from "./WaterEditPopup";
+import Footer from "./Footer";
 
 const WaterDetails = ({ authUser }) => {
   const [allWaterData, setAllWaterData] = useState([]);
@@ -151,21 +152,6 @@ const WaterDetails = ({ authUser }) => {
     checkCommentsLength();
     fetchComments();
   }, [pageDown]);
-
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-
-    if (allWaterData.length > 0) {
-      if (findRole(authUser.uid) == "admin") {
-        setCanEdit(true);
-      } else if (authUser.uid == allWaterData[0].data.UID) {
-        setCanEdit(true);
-      }
-    }
-  }, [allWaterData, authUser]);
 
   const handleNewComment = (event) => {
     setNewComment(event.target.value);
@@ -311,7 +297,8 @@ const WaterDetails = ({ authUser }) => {
               </p>
 
               <p>Dodał łowisko: {usernameAddedWater}</p>
-              {canEdit ? (
+              {findRole(authUser.uid) == "admin" ||
+              authUser.uid == allWaterData[0].data.UID ? (
                 <button
                   onClick={handleEdit}
                   className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
@@ -446,6 +433,7 @@ const WaterDetails = ({ authUser }) => {
           </>
         )}
       </div>
+      <Footer />
     </>
   );
 };

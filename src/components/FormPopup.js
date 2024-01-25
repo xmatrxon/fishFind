@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import { voivodeshipList } from "../voivodeshipList";
 import { fishList } from "../fishList";
 import * as Yup from "yup";
+import { Tooltip } from "react-tooltip";
 
 const FormPopup = (props) => {
   const [voivodeship, setVoivodeship] = useState("");
@@ -145,18 +146,39 @@ const FormPopup = (props) => {
               </p>
             ) : null}
           </div>
-          <div className="mb-4">
-            <textarea
-              className="focus:shadow-outline max-h-40 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-              id="rules"
-              type="text"
-              placeholder="Regulamin łowiska"
-              rows="2"
-              name="rules"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.rules}
-            />
+          <div className="mb-4 ">
+            <div className="flex">
+              <textarea
+                className="focus:shadow-outline max-h-40 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                id="rules"
+                type="text"
+                placeholder="Regulamin łowiska"
+                rows="2"
+                name="rules"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.rules}
+              />
+              <Tooltip id="my-tooltip" className="z-10" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-info-circle self-center"
+                width={20}
+                height={20}
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                data-tooltip-id="my-tooltip"
+                data-tooltip-content='Jeżeli obowiązuje regulamin PZW wpisz "Regulamin PZW"'>
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                <path d="M12 9h.01" />
+                <path d="M11 12h1v4h1" />
+              </svg>
+            </div>
             {formik.touched.rules && formik.errors.rules ? (
               <p className="text-xs italic text-red-500">
                 {formik.errors.rules}

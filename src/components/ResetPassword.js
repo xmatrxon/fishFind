@@ -2,6 +2,7 @@ import { sendPasswordResetEmail, getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Footer from "./Footer";
 
 const ResetPassword = () => {
   const formik = useFormik({
@@ -29,7 +30,7 @@ const ResetPassword = () => {
 
   return (
     <>
-      <div className="flex h-screen w-screen justify-center">
+      <div className="flex h-screen w-full justify-center">
         <div className="w-2/5 self-center">
           <form
             onSubmit={formik.handleSubmit}
@@ -67,6 +68,7 @@ const ResetPassword = () => {
           </form>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

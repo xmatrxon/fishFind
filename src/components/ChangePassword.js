@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { updatePassword, getAuth } from "firebase/auth";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Footer from "./Footer";
 
 const ChangePassword = ({ authUser }) => {
   const auth = getAuth();
@@ -32,7 +33,7 @@ const ChangePassword = ({ authUser }) => {
     <>
       {authUser ? (
         <>
-          <div className="flex h-screen w-screen justify-center">
+          <div className="flex h-screen w-full justify-center">
             <div className="w-2/5 self-center">
               <form
                 onSubmit={formik.handleSubmit}
@@ -72,6 +73,7 @@ const ChangePassword = ({ authUser }) => {
           </div>
         </>
       ) : null}
+      <Footer />
     </>
   );
 };

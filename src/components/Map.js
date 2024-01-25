@@ -16,6 +16,8 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import FormPopup from "./FormPopup";
 import pointInPolygon from "point-in-polygon";
 import { Link } from "react-router-dom";
+import { useLoading } from "./LoadingContext";
+import NewFormPopup from "./NewFormPopup";
 
 import { db } from "../config/firebase";
 import { collection, getDocs, query } from "firebase/firestore";
@@ -34,10 +36,11 @@ const Map = ({ authUser }) => {
   const [markers, setMarkers] = useState([]);
   const [markerLat, setMarkerLat] = useState();
   const [markerLng, setMarkerLng] = useState();
-  const [clickedWaterId, setClickedWaterId] = useState(null);
+  const [clickedWaterId, setClickedWaterId] = useState("");
   const [voivodeships, setVoivodeships] = useState([]);
   const [userID, setUserID] = useState();
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+  const { isLoading, setLoading } = useLoading();
 
   const maxBounds = [
     [54.868323814195975, 13.503610861651275],
@@ -45,24 +48,28 @@ const Map = ({ authUser }) => {
   ];
 
   useEffect(() => {
-    let markersData;
-    const abortController = new AbortController();
+    setLoading(true);
+  }, []);
 
+  useEffect(() => {
     const getMarkers = async () => {
       try {
         const q = query(collection(db, "markers"));
         const querySnapshot = await getDocs(q);
-        markersData = [];
+        const markersData = [];
         querySnapshot.forEach((doc) => {
           markersData.push({ id: doc.id, data: doc.data() });
         });
         setMarkers(markersData);
-        setLoading(false);
       } catch (err) {
         console.log(err);
       }
     };
 
+    getMarkers();
+  }, [popupVisible]);
+
+  useEffect(() => {
     const fetchVoivodeships = async () => {
       try {
         const voivodeshipNames = [
@@ -88,7 +95,6 @@ const Map = ({ authUser }) => {
           voivodeshipNames.map(async (voivodeship) => {
             const response = await fetch(
               `https://xmatrxon.github.io/apiSite/${voivodeship}.json`,
-              { signal: abortController.signal },
             );
             const data = await response.json();
             return { name: voivodeship, data };
@@ -102,11 +108,84 @@ const Map = ({ authUser }) => {
     };
 
     const fetchData = async () => {
-      await Promise.all([getMarkers(), fetchVoivodeships()]);
+      if (!voivodeships.length) {
+        await fetchVoivodeships();
+      }
+
+      if (voivodeships.length && markers.length) {
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, [popupVisible]);
+  }, [voivodeships, markers]);
+
+  // useEffect(() => {
+  //   let markersData;
+  //   const getMarkers = async () => {
+  //     try {
+  //       const q = query(collection(db, "markers"));
+  //       const querySnapshot = await getDocs(q);
+  //       markersData = [];
+  //       querySnapshot.forEach((doc) => {
+  //         markersData.push({ id: doc.id, data: doc.data() });
+  //       });
+  //       setMarkers(markersData);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+
+  //   const fetchVoivodeships = async () => {
+  //     try {
+  //       const voivodeshipNames = [
+  //         "slaskie",
+  //         "dolnoslaskie",
+  //         "kujawsko-pomorskie",
+  //         "lodzkie",
+  //         "lubelskie",
+  //         "lubuskie",
+  //         "malopolskie",
+  //         "mazowieckie",
+  //         "opolskie",
+  //         "podkarpackie",
+  //         "podlaskie",
+  //         "pomorskie",
+  //         "swietokrzyskie",
+  //         "warminsko-mazurskie",
+  //         "wielkopolskie",
+  //         "zachodnio-pomorskie",
+  //       ];
+
+  //       const voivodeshipsData = await Promise.all(
+  //         voivodeshipNames.map(async (voivodeship) => {
+  //           const response = await fetch(
+  //             `https://xmatrxon.github.io/apiSite/${voivodeship}.json`,
+  //           );
+  //           const data = await response.json();
+  //           return { name: voivodeship, data };
+  //         }),
+  //       );
+
+  //       setVoivodeships(voivodeshipsData);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+
+  //   const fetchData = async () => {
+  //     await getMarkers();
+  //     if (!voivodeships.length) {
+  //       await fetchVoivodeships();
+  //     }
+
+  //     if (voivodeships.length && markers.length) {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [popupVisible, voivodeships, markers]);
 
   useEffect(() => {
     checkMatchingMarker();
@@ -160,9 +239,9 @@ const Map = ({ authUser }) => {
     });
   };
 
-  const checkMatchingMarker = () => {
+  const checkMatchingMarker = async () => {
     const matchingMarker = markers.find(
-      (marker) => marker.waterId === clickedWaterId,
+      (marker) => marker.data.waterId === clickedWaterId,
     );
 
     if (matchingMarker && popupVisible) {
@@ -173,7 +252,7 @@ const Map = ({ authUser }) => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <>
         <div className="flex h-[calc(100vh-48px)] items-center justify-center">
@@ -293,6 +372,15 @@ const Map = ({ authUser }) => {
         pass={closePopup}
         uid={userID}
       />
+
+      {/* <NewFormPopup
+        trigger={popupVisible}
+        setTrigger={setPopupVisible}
+        lat={markerLat}
+        lng={markerLng}
+        clickedWaterId={clickedWaterId}
+        uid={userID}
+      /> */}
     </>
   );
 };
