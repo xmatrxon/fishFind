@@ -67,16 +67,16 @@ const ChangeUsername = ({ authUser }) => {
     <>
       {authUser ? (
         <>
-          <div className="flex h-screen w-full justify-center">
+          <div className="sss flex w-full justify-center text-center">
             <div className="w-2/5 self-center">
               <form
                 onSubmit={formik.handleSubmit}
-                className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+                className="mb-4 rounded bg-[#fafafa] px-8 pb-8 pt-6 shadow-md">
                 <h1 className="border-silver border-b-2 border-solid pb-4">
                   Podaj nową nazwę użytkownika
                 </h1>
                 <div className="mb-3">
-                  <label className="mb-2 block text-sm font-bold text-gray-700">
+                  <label className="mb-2 mt-3 block text-sm font-bold text-gray-700">
                     Nazwa użytkownika
                   </label>
                   <input

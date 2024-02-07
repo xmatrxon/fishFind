@@ -30,17 +30,17 @@ const ResetPassword = () => {
 
   return (
     <>
-      <div className="flex h-screen w-full justify-center">
+      <div className="sss flex w-full justify-center text-center">
         <div className="w-2/5 self-center">
           <form
             onSubmit={formik.handleSubmit}
-            className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+            className="mb-4 rounded bg-[#fafafa] px-8 pb-8 pt-6 shadow-md">
             <h1 className="border-silver border-b-2 border-solid pb-4">
               Zresetuj hasło
             </h1>
             <div className="mb-6 pt-6">
               <label className="mb-2 block text-sm font-bold text-gray-700">
-                Email
+                Adres email
               </label>
               <input
                 className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"

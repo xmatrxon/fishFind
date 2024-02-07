@@ -1,12 +1,15 @@
 import { useState } from "react";
 import Select from "react-select";
 import { db } from "../config/firebase";
+import { storage } from "../config/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
 import { useFormik } from "formik";
 import { voivodeshipList } from "../voivodeshipList";
 import { fishList } from "../fishList";
 import * as Yup from "yup";
 import { Tooltip } from "react-tooltip";
+import { v4 } from "uuid";
 
 import "../index.css";
 
@@ -22,6 +25,8 @@ const NewFormPopup = (props) => {
       name: "",
       description: "",
       rules: "",
+      city: "",
+      image: null,
     },
     validationSchema: Yup.object({
       name: Yup.string()
@@ -35,15 +40,48 @@ const NewFormPopup = (props) => {
         .max(300, "Maksymalna ilość znaków to 300"),
       voivodeship: Yup.string().required("Województwo jest wymagane"),
       fish: Yup.array().required("Conajmniej jeden gatunek jest wymagany"),
+      city: Yup.string()
+        .required("Miasto jest wymagane")
+        .max(100, "Maksymalna ilość znaków to 100"),
+      image: Yup.mixed()
+        .required("Zdjęcie łowiska jest wymagane")
+        .test(
+          "fileFormat",
+          "Obsługiwane formaty plików to JPG, PNG oraz JPEG",
+          (value) => {
+            if (!value) return true;
+
+            const supportedFormats = ["image/jpeg", "image/png", "image/jpg"];
+            return supportedFormats.includes(value.type);
+          },
+        )
+        .test(
+          "fileSize",
+          "Maksymalny dopuszcalny rozmiar zdjecia to 10MB",
+          (value) => {
+            const MAX_PHOTO_SIZE = 10485760;
+            return value.size <= MAX_PHOTO_SIZE;
+          },
+        ),
     }),
     onSubmit: async () => {
       const markersCollectionRef = collection(db, "markers");
 
       try {
+        let imageURL = null;
+
+        const imageRef = ref(
+          storage,
+          `waterImages/${formik.values.image.name + v4()}`,
+        );
+        const snapshot = await uploadBytes(imageRef, formik.values.image);
+        imageURL = await getDownloadURL(snapshot.ref);
+
         await addDoc(markersCollectionRef, {
           id: Date.now(),
           name: formik.values.name,
           voivodeship: voivodeship,
+          city: formik.values.city,
           description: formik.values.description,
           rules: formik.values.rules,
           fish: fish,
@@ -51,6 +89,7 @@ const NewFormPopup = (props) => {
           lat: props.lat,
           waterId: props.clickedWaterId,
           UID: props.uid,
+          imageURL: imageURL,
         }).then(() => {
           handlePopupClick();
           props.pass(true);
@@ -78,10 +117,17 @@ const NewFormPopup = (props) => {
   };
 
   const handlePopupClick = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      props.setTrigger(false);
-    }, 300);
+    props.setTrigger(false);
+    setFish("");
+    setVoivodeship("");
+    formik.setFieldValue("name", "");
+    formik.setFieldTouched("name", false);
+    formik.setFieldValue("description", "");
+    formik.setFieldTouched("description", false);
+    formik.setFieldValue("rules", "");
+    formik.setFieldTouched("rules", false);
+    formik.setFieldValue("city", "");
+    formik.setFieldTouched("city", false);
   };
 
   return props.trigger ? (
@@ -116,7 +162,8 @@ const NewFormPopup = (props) => {
               }}>
               <button
                 className="focus:shadow-outline t-0 mb-5 flex rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
-                type="button">
+                type="button"
+                onClick={() => props.setTrigger(false)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="icon icon-tabler icon-tabler-x"
@@ -226,6 +273,23 @@ const NewFormPopup = (props) => {
                 ) : null}
               </div>
               <div className="mb-4">
+                <input
+                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                  id="city"
+                  type="text"
+                  placeholder="Miasto"
+                  name="city"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.city}
+                />
+                {formik.touched.city && formik.errors.city ? (
+                  <p className="text-xs italic text-red-500">
+                    {formik.errors.city}
+                  </p>
+                ) : null}
+              </div>
+              <div className="mb-4">
                 <Select
                   className=""
                   options={voivodeshipList}
@@ -256,6 +320,44 @@ const NewFormPopup = (props) => {
                 formik.errors.fish ? (
                   <p className="text-xs italic text-red-500">
                     {formik.errors.fish}
+                  </p>
+                ) : null}
+              </div>
+              <div className="mb-4">
+                <div className="flex">
+                  <input
+                    type="file"
+                    name="image"
+                    onChange={(event) =>
+                      formik.setFieldValue(
+                        "image",
+                        event.currentTarget.files[0],
+                      )
+                    }
+                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon icon-tabler icon-tabler-info-circle self-center"
+                    width={20}
+                    height={20}
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    data-tooltip-id="my-tooltip"
+                    data-tooltip-content="Obługiwane formaty zdjęć to PNG, JPG oraz JPEG. Maksymalny rozmiar zdjęcia to 10MB">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                    <path d="M12 9h.01" />
+                    <path d="M11 12h1v4h1" />
+                  </svg>
+                </div>
+                {(formik.touched.image || clickedButton) &&
+                formik.errors.image ? (
+                  <p className="text-xs italic text-red-500">
+                    {formik.errors.image}
                   </p>
                 ) : null}
               </div>

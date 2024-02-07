@@ -423,7 +423,12 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="flex h-screen w-full items-center justify-center bg-[#ddd]">
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-[#ddd] text-center">
+        <p className="my-4 pt-4 text-[34px] font-bold">Wyszukwanie łowisk</p>
+        <p className="text-[18px]">
+          Skorzystaj z naszej wyszukiwarki łowisk. Możesz wyszukiwać po nazwie
+          łowiska, województwie lub też po występujących rybach na łowisku.
+        </p>
         <div className=" mt-20 h-3/4 w-9/12 rounded-lg bg-white">
           <div>
             <form className="border-silver mb-10 flex w-full flex-wrap rounded border-b-2 border-solid bg-white pt-6">
@@ -470,7 +475,7 @@ const Dashboard = () => {
               allWaterData.map((water) => (
                 <div
                   key={water.data.id}
-                  className="mb-5 flex h-full justify-between rounded-lg bg-purple-300 px-10 py-3">
+                  className="mb-5 flex h-full justify-between rounded-lg bg-[#ddd] px-10 py-3">
                   <div className="w-full">
                     <p>{water.data.name}</p>
                     <div className="flex w-full">
@@ -480,14 +485,14 @@ const Dashboard = () => {
                         iconColor={"currentColor"}
                       />
                       {Array.isArray(water.data.fish) && (
-                        <p>
+                        <p className="ml-2">
                           {water.data.fish.map((fish) => fish.label).join(", ")}
                         </p>
                       )}
                     </div>
                   </div>
                   <Link
-                    className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                    className="focus:shadow-outline flex items-center justify-center rounded bg-blue-500 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none"
                     to={`/dashboard/${water.data.id}`}>
                     Szczegóły
                   </Link>

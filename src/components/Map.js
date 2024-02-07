@@ -22,6 +22,9 @@ import NewFormPopup from "./NewFormPopup";
 import { db } from "../config/firebase";
 import { collection, getDocs, query } from "firebase/firestore";
 
+import "../index.css";
+import ErrorModal from "./ErrorModal";
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -41,6 +44,8 @@ const Map = ({ authUser }) => {
   const [userID, setUserID] = useState();
   // const [loading, setLoading] = useState(true);
   const { isLoading, setLoading } = useLoading();
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const maxBounds = [
     [54.868323814195975, 13.503610861651275],
@@ -50,6 +55,10 @@ const Map = ({ authUser }) => {
   useEffect(() => {
     setLoading(true);
   }, []);
+
+  useEffect(() => {
+    checkMatchingMarker();
+  }, [markers, clickedWaterId, popupVisible]);
 
   useEffect(() => {
     const getMarkers = async () => {
@@ -187,10 +196,6 @@ const Map = ({ authUser }) => {
   //   fetchData();
   // }, [popupVisible, voivodeships, markers]);
 
-  useEffect(() => {
-    checkMatchingMarker();
-  }, [markers, clickedWaterId, popupVisible]);
-
   const onEachWater = (feature, layer) => {
     const waterName = feature.properties["@id"];
     layer.bindPopup(waterName);
@@ -228,12 +233,18 @@ const Map = ({ authUser }) => {
           if (isInsideAnyVoivodeship) {
             setPopupVisible(true);
           } else {
-            alert(
-              "Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym",
+            // alert(
+            //   "Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym",
+            // );
+            setIsError(true);
+            setErrorMsg(
+              "Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym.",
             );
           }
         } else {
-          alert("Aby dodać łowisko należy się zalogować");
+          setIsError(true);
+          setErrorMsg("Aby dodać łowisko należy się zalogować!");
+          // alert("Aby dodać łowisko należy się zalogować");
         }
       },
     });
@@ -246,10 +257,16 @@ const Map = ({ authUser }) => {
 
     if (matchingMarker && popupVisible) {
       setPopupVisible(false);
-      alert(
-        `W tej lokalizacji znajduje się już znacznik: ${matchingMarker.id}`,
-      );
+      setIsError(true);
+      setErrorMsg("W tym zbiorniku wodnym znajduje się już łowisko.");
+      // alert(
+      //   `W tej lokalizacji znajduje się już znacznik: ${matchingMarker.id}`,
+      // );
     }
+  };
+
+  const closeErrorModal = () => {
+    setIsError(false);
   };
 
   if (isLoading) {
@@ -287,7 +304,7 @@ const Map = ({ authUser }) => {
           maxBounds={maxBounds}
           zoom={7}
           minZoom={7}
-          className="h-screen w-screen">
+          className="mt-[5vh] h-[95vh] w-screen">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -363,7 +380,7 @@ const Map = ({ authUser }) => {
           ) : null}
         </MapContainer>
       </div>
-      <FormPopup
+      {/* <FormPopup
         trigger={popupVisible}
         setTrigger={setPopupVisible}
         lat={markerLat}
@@ -371,16 +388,24 @@ const Map = ({ authUser }) => {
         clickedWaterId={clickedWaterId}
         pass={closePopup}
         uid={userID}
+      /> */}
+
+      <ErrorModal
+        trigger={isError}
+        setTrigger={setIsError}
+        pass={closeErrorModal}
+        errorMsg={errorMsg}
       />
 
-      {/* <NewFormPopup
+      <NewFormPopup
         trigger={popupVisible}
         setTrigger={setPopupVisible}
+        pass={closePopup}
         lat={markerLat}
         lng={markerLng}
         clickedWaterId={clickedWaterId}
         uid={userID}
-      /> */}
+      />
     </>
   );
 };

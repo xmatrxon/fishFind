@@ -18,6 +18,8 @@ import WaterDetails from "./components/WaterDetails";
 import NotFound from "./components/NotFound";
 import PrivateRoutes from "./components/PrivateRoutes";
 import PublicRoutes from "./components/PublicRoutes";
+import FavouritesWater from "./components/FavouritesWater";
+import ChangeAvatar from "./components/ChangeAvatar";
 import { UserFetch } from "./components/UserFetch";
 import { LoadingProvider } from "./components/LoadingContext";
 
@@ -53,6 +55,10 @@ function App() {
             />
             <Route path="/reset" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
+            <Route
+              path="/favourites"
+              element={<FavouritesWater authUser={authUser} />}
+            />
 
             <Route element={<PrivateRoutes authUser={authUser} />}>
               <Route path="/logout" element={<Logout />} />
@@ -67,6 +73,10 @@ function App() {
               <Route
                 path="/account"
                 element={<UserFetch authUser={authUser} />}
+              />
+              <Route
+                path="/changeAvatar"
+                element={<ChangeAvatar authUser={authUser} />}
               />
             </Route>
 
