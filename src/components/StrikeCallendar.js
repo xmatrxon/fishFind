@@ -169,15 +169,6 @@ const StrikeCallendar = ({ lat, lon, city }) => {
     return date.toLocaleDateString(undefined, options);
   };
 
-  // const props = useSpring({
-  //   to: { opacity: 1 },
-  //   from: { opacity: 0 },
-  //   reset: true,
-  //   reverse: showPopup,
-  //   delay: 200,
-  //   onRest: () => setShowPopup(!showPopup),
-  // });
-
   return (
     <div>
       {weather.forecast && (
