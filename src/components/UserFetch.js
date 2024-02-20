@@ -78,36 +78,34 @@ export const UserFetch = ({ authUser }) => {
   }
 
   return (
-    <>
-      <div className="sss flex w-full justify-center text-center">
-        <div className="w-2/5 self-center">
-          <form className="mb-4 rounded bg-[#fafafa] px-8 pb-8 pt-6 shadow-md">
-            <h1 className="border-silver border-b-2 border-solid pb-4 text-[24px]">
-              Twoje dane
-            </h1>
+    <div className="userFetch">
+      <div className="main-div">
+        <div className="inner-div">
+          <div className="content-div shadow-md">
+            <h1 className="border-silver">Twoje dane</h1>
 
-            <div>
+            <div className="data-div">
               {userData &&
                 userData.map((user) => (
                   <div key={user.id}>
-                    <div className="flex flex-col items-center">
-                      <p className="mt-3 text-left font-bold">Avatar</p>
-                      <div className="my-5 flex flex-col align-middle">
+                    <div className="avatar-div">
+                      <p className="">Avatar</p>
+                      <div className="avatar-div__img">
                         {user.data.imageURL ? (
                           <img
                             src={user.data.imageURL}
                             alt="User avatar"
-                            className="avatar-square rounded-md"
+                            className="avatar-square"
                           />
                         ) : (
                           <img
                             src="https://firebasestorage.googleapis.com/v0/b/fishfind-2e78f.appspot.com/o/userImages%2FDefaultAvatar.png?alt=media&token=ecb71d3a-2b7e-4ac1-b770-9ce0fbf680f6"
                             alt="User avatar"
-                            className="avatar-square rounded-md"
+                            className="avatar-square"
                           />
                         )}
                         <button
-                          className=" mt-2 cursor-pointer border-none bg-transparent text-left text-blue-500 underline"
+                          className="cursor-pointer border-none bg-transparent text-left text-blue-500 underline"
                           onClick={() => {
                             changeAvatar(user.id, user.data.imageURL);
                           }}>
@@ -115,17 +113,13 @@ export const UserFetch = ({ authUser }) => {
                         </button>
                       </div>
                     </div>
-                    <div className=" text-left">
+                    <div className="profil-details">
                       <div>
-                        <p className="mt-3 text-left font-bold">
-                          Szczególy profilu
-                        </p>
-                        <div className="text-left">
+                        <p className="profil-details__p">Szczególy profilu</p>
+                        <div className="email-div">
                           <div>
-                            <p className="text-md mt-4 font-bold">
-                              Adres email
-                            </p>
-                            <div className="flex">
+                            <p className="email-div__p">Adres email</p>
+                            <div className="email-div__input">
                               <input
                                 className="focus:shadow-outline  appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
                                 id="email"
@@ -137,11 +131,9 @@ export const UserFetch = ({ authUser }) => {
                             </div>
                           </div>
                         </div>
-                        <p className="text-md mt-4 font-bold">
-                          Nazwa użytkownika
-                        </p>
+                        <p className="username__p">Nazwa użytkownika</p>
                         <Tooltip id="my-tooltip" className="z-10" />
-                        <div className="flex">
+                        <div className="username__input">
                           <input
                             className="focus:shadow-outline  appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
                             id="username"
@@ -151,13 +143,13 @@ export const UserFetch = ({ authUser }) => {
                             disabled
                           />
                           <button
-                            className="focus:shadow-outline mx-5 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                            className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                             onClick={() => {
                               changeUsernamee(user.id);
                             }}
                             data-tooltip-id="my-tooltip"
                             data-tooltip-content="Zmień nazwę użytkownika">
-                            <div className="flex">
+                            <div>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="icon icon-tabler icon-tabler-edit"
@@ -184,12 +176,12 @@ export const UserFetch = ({ authUser }) => {
                       </div>
                     </div>
 
-                    <div className="text-left">
+                    <div className="password-div">
                       <div>
-                        <p className="text-md mt-4 font-bold">Hasło</p>
-                        <div className="flex">
+                        <p className="password-div__p">Hasło</p>
+                        <div className="password_input">
                           <input
-                            className="focus:shadow-outline  appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                            className="focus:shadow-outline  borderleading-tight appearance-none rounded text-gray-700 shadow focus:outline-none"
                             id="password"
                             type="password"
                             name="password"
@@ -197,13 +189,13 @@ export const UserFetch = ({ authUser }) => {
                             disabled
                           />
                           <button
-                            className="focus:shadow-outline mx-5 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                            className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                             onClick={() => {
                               handleClick(user.id);
                             }}
                             data-tooltip-id="my-tooltip"
                             data-tooltip-content="Zmień hasło">
-                            <div className="flex">
+                            <div>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="icon icon-tabler icon-tabler-edit"
@@ -229,13 +221,13 @@ export const UserFetch = ({ authUser }) => {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-4">
+                    <div className="favourites-div">
                       <button
-                        className="focus:shadow-outline mx-5 mt-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                        className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                         onClick={() => {
                           handleFavourites();
                         }}>
-                        <div className="flex">
+                        <div className="favourites-button">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon icon-tabler icon-tabler-star"
@@ -250,17 +242,17 @@ export const UserFetch = ({ authUser }) => {
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                             <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" />
                           </svg>
-                          <p className="pl-3">Twoje ulubione łowiska</p>
+                          <p>Twoje ulubione łowiska</p>
                         </div>
                       </button>
                     </div>
                   </div>
                 ))}
             </div>
-          </form>
+          </div>
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };

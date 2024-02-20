@@ -13,34 +13,18 @@ const Popup = ({ setIsOpenPopup }) => {
   return (
     <div
       onClick={handlePopupClick}
-      className={`popup-background ${
+      className={`popup-water popup-background z-10 ${
         isVisible ? "visible" : "hidden"
       } text-black`}>
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          position: "relative",
-          background: "white",
-          borderRadius: "8px",
-          width: "300px",
-          padding: "20px 10px",
           animation: isVisible ? "fadeIn 0.3s linear" : "fadeOut 0.3s linear",
         }}
-        className="!bg-white">
-        <div
-          style={{
-            borderBottom: "1px solid lightgray",
-            paddingBottom: "10px",
-          }}>
-          <h1 style={{ margin: 0 }}>Wędkarski kalendarz brań</h1>
-          <div
-            onClick={handlePopupClick}
-            style={{
-              cursor: "pointer",
-              position: "absolute",
-              top: 10,
-              right: 10,
-            }}>
+        className="content">
+        <div className="header-div">
+          <h1>Wędkarski kalendarz brań</h1>
+          <div onClick={handlePopupClick} className="button-div">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="icon icon-tabler icon-tabler-x"
@@ -64,21 +48,23 @@ const Popup = ({ setIsOpenPopup }) => {
             najważniejsze czynniki przy wędkowaniu. Następnie przypisuje
             odpowiednim czynnikom wagę oraz oblicza punkty, które zostaly
             wygenerowane na podstawie określonych czynników.
-            <br></br>
-            <br></br>
+          </p>
+          <p>
             Pierwszym z nich jest średnia dzienna temperatura. Ryby lubią
             żerować w temperaturze pomiędzy 5&#176;C a 25&#176;C.
-            <br></br>
-            <br></br>
+          </p>
+          <p>
             Kolejnym czynnikiem jest różnica ciśnienia w dany dzień. Ryby nie są
             zbyt aktywne jeżeli ta różnica jest wysoka.
-            <br></br>
-            <br></br>
+          </p>
+          <p>
+            {" "}
             Następnym czynnikiem jest deszcz. W naszym kalendarzu używamy
             prawdopodobieństwa opadów. Jeżeli jest ono wysokie brania zyskują na
             wartości.
-            <br></br>
-            <br></br>
+          </p>
+          <p>
+            {" "}
             Ostatnim z czynników są fazy księżyca. W zależności od fazy, która
             będzie danej nocy, ryby następnego dnia różnie żerują. Najlepsze
             brania są podczas księżyca w nowiu.

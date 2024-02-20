@@ -1,7 +1,5 @@
-import { useState } from "react";
-
 const ErrorModal = (props) => {
-  const [isError, setIsError] = useState(true);
+  const isError = true;
 
   const handlePopupClick = () => {
     props.setTrigger(false);

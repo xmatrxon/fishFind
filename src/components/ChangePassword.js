@@ -30,23 +30,17 @@ const ChangePassword = ({ authUser }) => {
   });
 
   return (
-    <>
+    <div className="changePassword">
       {authUser ? (
-        <>
-          <div className="sss flex w-full justify-center text-center">
-            <div className="w-2/5 self-center">
-              <form
-                onSubmit={formik.handleSubmit}
-                className="mb-4 rounded bg-[#fafafa] px-8 pb-8 pt-6 shadow-md">
-                <h1 className="border-silver border-b-2 border-solid pb-4">
-                  Podaj nowe hasło
-                </h1>
-                <div className="mb-3">
-                  <label className="mb-2 block pt-3 text-sm font-bold text-gray-700">
-                    Hasło
-                  </label>
+        <div>
+          <div className="content-div">
+            <div className="form-div">
+              <form onSubmit={formik.handleSubmit} className="shadow-md">
+                <h1 className="border-silver">Zmień hasło</h1>
+                <div className="input-div">
+                  <label className="text-gray-700">Nowe hasło</label>
                   <input
-                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                    className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                     id="password"
                     type="password"
                     placeholder="********"
@@ -63,7 +57,7 @@ const ChangePassword = ({ authUser }) => {
                 </div>
                 <div>
                   <button
-                    className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                    className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                     type="submit">
                     Zmień
                   </button>
@@ -71,10 +65,10 @@ const ChangePassword = ({ authUser }) => {
               </form>
             </div>
           </div>
-        </>
+        </div>
       ) : null}
       <Footer />
-    </>
+    </div>
   );
 };
 

@@ -23,6 +23,8 @@ import ChangeAvatar from "./components/ChangeAvatar";
 import { UserFetch } from "./components/UserFetch";
 import { LoadingProvider } from "./components/LoadingContext";
 
+import "./styles.scss";
+
 function App() {
   const [authUser, setAuthUser] = useState(null);
 

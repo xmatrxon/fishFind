@@ -28,6 +28,7 @@ const ChangeAvatar = ({ authUser }) => {
     },
     validationSchema: Yup.object({
       image: Yup.mixed()
+        .required("Proszę wybrać zdjęcie")
         .test(
           "fileFormat",
           "Obsługiwane formaty plików to JPG, PNG oraz JPEG",
@@ -47,7 +48,10 @@ const ChangeAvatar = ({ authUser }) => {
           },
         ),
     }),
-    onSubmit: async () => {
+    onSubmit: async (e) => {
+      e.preventDefault();
+      setClickedButton(true);
+
       try {
         let imageURL = null;
 
@@ -65,7 +69,7 @@ const ChangeAvatar = ({ authUser }) => {
 
         if (oldImageURL) {
           if (
-            oldImageURL !=
+            oldImageURL !==
             "https://firebasestorage.googleapis.com/v0/b/fishfind-2e78f.appspot.com/o/userImages%2FDefaultAvatar.png?alt=media&token=ecb71d3a-2b7e-4ac1-b770-9ce0fbf680f6"
           ) {
             const storageRef = ref(storage, oldImageURL);
@@ -81,25 +85,21 @@ const ChangeAvatar = ({ authUser }) => {
   });
 
   return (
-    <>
+    <div className="changeAvatar">
       {authUser ? (
-        <>
-          <div className="sss flex w-full justify-center text-center">
-            <div className="w-2/5 self-center">
-              <form
-                onSubmit={formik.handleSubmit}
-                className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
-                <h1 className="border-silver border-b-2 border-solid pb-4">
-                  Prześlij nowy avatar
-                </h1>
-                <div className="my-3">
-                  <div className="flex justify-center">
+        <div>
+          <div className="content-div">
+            <div className="form-div">
+              <form onSubmit={formik.handleSubmit} className="shadow-md">
+                <h1 className="border-silver">Prześlij nowy avatar</h1>
+                <div className="inner-div">
+                  <div className="input-div">
                     <Tooltip id="my-tooltip" className="z-10" />
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="icon icon-tabler icon-tabler-info-circle mr-4 self-center"
-                      width={20}
-                      height={20}
+                      className="icon icon-tabler icon-tabler-info-circle self-center"
+                      width={24}
+                      height={24}
                       viewBox="0 0 24 24"
                       strokeWidth={2}
                       stroke="currentColor"
@@ -133,19 +133,18 @@ const ChangeAvatar = ({ authUser }) => {
                 </div>
                 <div>
                   <button
-                    className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                    type="submit"
-                    onClick={() => setClickedButton(true)}>
+                    className="focus:shadow-outline rounded bg-blue-500  font-bold text-white hover:bg-blue-700 focus:outline-none"
+                    type="submit">
                     Zmień
                   </button>
                 </div>
               </form>
             </div>
           </div>
-        </>
+        </div>
       ) : null}
       <Footer />
-    </>
+    </div>
   );
 };
 

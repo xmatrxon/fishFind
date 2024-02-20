@@ -1,4 +1,3 @@
-import "../style.css";
 import { useState } from "react";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
 
@@ -15,7 +14,7 @@ const Navbar = ({ authUser }) => {
 
   return (
     <div className="navbar">
-      <Link to="/" className="pl-4 text-4xl" onClick={closeNavbar}>
+      <Link to="/" className="home-link" onClick={closeNavbar}>
         FishFind
       </Link>
       <button className="toggle-button" onClick={toggleNavbar}>

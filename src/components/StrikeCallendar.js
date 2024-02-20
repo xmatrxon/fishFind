@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import FishIcon from "./FishIcon";
-import "../index.css";
 import Popup from "./Popup";
 
 const StrikeCallendar = ({ lat, lon, city }) => {
@@ -9,7 +8,6 @@ const StrikeCallendar = ({ lat, lon, city }) => {
   const [weather, setWeather] = useState([]);
   const [pressureData, setPressureData] = useState([]);
   const [dayPoints, setDayPoints] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
 
   const fetchWeather = async () => {
@@ -170,37 +168,33 @@ const StrikeCallendar = ({ lat, lon, city }) => {
   };
 
   return (
-    <div>
+    <div className="strikeCallendar">
       {weather.forecast && (
-        <div className=" w-[28rem] justify-center">
-          <div className="rounded-t-md bg-[#fff] p-3 font-bold text-black">
+        <div className="table-callendar">
+          <div className=" title rounded-t-md bg-[#fff] font-bold text-black">
             Kalendarz Brań
           </div>
-          <div className="flex w-full justify-around bg-[#ddd] p-3 text-black">
-            <div className=" flex w-24 flex-col">
+          <div className="legend">
+            <div className="legend-description">
               <p>Wyśmienite</p>
               <FishIcon height={48} width={48} iconColor={"limegreen"} />
             </div>
-            <div className="flex w-24 flex-col">
+            <div className="legend-description">
               <p>Dobre</p>
               <FishIcon height={48} width={48} iconColor={"darkcyan"} />
             </div>
-            <div className="flex w-24 flex-col">
+            <div className="legend-description">
               <p>Średnie</p>
               <FishIcon height={48} width={48} iconColor={"orange"} />
             </div>
-            <div className="flex w-24 flex-col">
+            <div className="legend-description">
               <p>Złe</p>
               <FishIcon height={48} width={48} iconColor={"tomato"} />
             </div>
           </div>
-          <div className="flex">
-            <div className="w-1/2 border-r-2 bg-[#fff] py-3 font-bold text-black">
-              Dzień
-            </div>
-            <div className="w-1/2 bg-[#fff] py-3 font-bold text-black">
-              Brania
-            </div>
+          <div className="table-head">
+            <div className="row-head">Dzień</div>
+            <div className="row-head">Brania</div>
           </div>
           {dayPoints.map((day, index) => (
             <div
@@ -211,15 +205,15 @@ const StrikeCallendar = ({ lat, lon, city }) => {
               <div className={`w-1/2 border-r-2 py-3 text-black`}>
                 {formatDate(day.date)}
               </div>
-              <div className={`flex w-1/2 justify-center  py-3`}>
+              <div className={"fishIcon"}>
                 <FishIcon height={48} width={48} iconColor={day.iconColor} />
               </div>
             </div>
           ))}
         </div>
       )}
-      <div className="flex justify-center pt-4">
-        <p className="mr-2"> Zobacz jak działa nasz kalendarz brań </p>
+      <div className="callendar-info">
+        <p> Zobacz jak działa nasz kalendarz brań </p>
         <button onClick={setIsOpenPopup.bind(this, true)}>
           {" "}
           <svg

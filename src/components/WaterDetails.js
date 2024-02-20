@@ -15,19 +15,18 @@ import {
   arrayUnion,
   updateDoc,
   arrayRemove,
+  serverTimestamp,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StrikeCallendar from "./StrikeCallendar";
 import WaterEditPopup from "./WaterEditPopup";
 import Footer from "./Footer";
-import { getAuth } from "firebase/auth";
 import { Tooltip } from "react-tooltip";
 
-import "../index.css";
 import FishIcon from "./FishIcon";
 
 const WaterDetails = ({ authUser }) => {
@@ -36,7 +35,6 @@ const WaterDetails = ({ authUser }) => {
   const [newComment, setNewComment] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [usernameAddedWater, setUsernameAddedWater] = useState("");
-  const [canEdit, setCanEdit] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
 
   const [lastDoc, setLastDoc] = useState(null);
@@ -47,8 +45,7 @@ const WaterDetails = ({ authUser }) => {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [helper, setHelper] = useState(0);
   const [isFavourite, setIsFavoutire] = useState(false);
-
-  const firstRender = useRef(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const history = useNavigate();
   const { waterId } = useParams();
@@ -132,20 +129,33 @@ const WaterDetails = ({ authUser }) => {
   const fetchComments = async () => {
     await checkCommentsLength();
 
-    const q = query(
-      collection(db, "comments"),
-      where("waterId", "==", +waterId),
-      orderBy("date"),
-      startAfter(lastDoc),
-      limit(3),
-    );
-
     try {
+      let q = query(
+        collection(db, "comments"),
+        where("waterId", "==", +waterId),
+        orderBy("date", "desc"),
+        limit(3),
+      );
+
+      if (lastDoc) {
+        q = query(
+          collection(db, "comments"),
+          where("waterId", "==", +waterId),
+          orderBy("date", "desc"),
+          startAfter(lastDoc),
+          limit(3),
+        );
+      }
+
       const querySnapshot = await getDocs(q);
-      const commentsData = [];
-      querySnapshot.forEach((doc) => {
-        commentsData.push({ id: doc.id, data: doc.data() });
-      });
+      const commentsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: {
+          ...doc.data(),
+          date: doc.data().date.toDate().toLocaleDateString(),
+        },
+      }));
+
       setAllComments(commentsData);
       setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
       setFirstDoc(querySnapshot.docs[0]);
@@ -268,21 +278,13 @@ const WaterDetails = ({ authUser }) => {
     e.preventDefault();
     const markersCollectionRef = collection(db, "comments");
 
-    const currentDate = new Date();
-
-    const day = currentDate.getDate().toString().padStart(2, "0");
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = currentDate.getFullYear();
-
-    const formattedDate = `${day}.${month}.${year}`;
-
     try {
       await addDoc(markersCollectionRef, {
         id: Date.now(),
         waterId: +waterId,
         comment: newComment,
         UID: authUser.uid,
-        date: formattedDate,
+        date: serverTimestamp(),
       }).then(() => {
         setNewComment("");
         history(0);
@@ -307,17 +309,20 @@ const WaterDetails = ({ authUser }) => {
     const q = query(
       collection(db, "comments"),
       where("waterId", "==", +waterId),
-      orderBy("date"),
+      orderBy("date", "desc"),
       endBefore(firstDoc),
       limitToLast(3),
     );
 
     try {
       const querySnapshot = await getDocs(q);
-      const commentsData = [];
-      querySnapshot.forEach((doc) => {
-        commentsData.push({ id: doc.id, data: doc.data() });
-      });
+      const commentsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: {
+          ...doc.data(),
+          date: doc.data().date.toDate().toLocaleDateString(),
+        },
+      }));
       setAllComments(commentsData);
       setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
       setFirstDoc(querySnapshot.docs[0]);
@@ -334,34 +339,40 @@ const WaterDetails = ({ authUser }) => {
   };
 
   const addFavouriteWater = async () => {
-    const userDocId = findUserDocId(authUser.reloadUserInfo.localId);
-    const reff = doc(db, "users", userDocId);
-    const waterId = allWaterData[0].data.id;
-    const waterName = allWaterData[0].data.name;
-    if (isFavourite) {
-      await updateDoc(reff, {
-        favouriteWater: arrayRemove({ id: waterId, name: waterName }),
-      });
-      setIsFavoutire(false);
+    if (authUser) {
+      const userDocId = findUserDocId(authUser.reloadUserInfo.localId);
+      const reff = doc(db, "users", userDocId);
+      const waterId = allWaterData[0].data.id;
+      const waterName = allWaterData[0].data.name;
+      if (isFavourite) {
+        await updateDoc(reff, {
+          favouriteWater: arrayRemove({ id: waterId, name: waterName }),
+        });
+        setIsFavoutire(false);
+      } else {
+        await updateDoc(reff, {
+          favouriteWater: arrayUnion({ id: waterId, name: waterName }),
+        });
+      }
+      history(0);
     } else {
-      await updateDoc(reff, {
-        favouriteWater: arrayUnion({ id: waterId, name: waterName }),
-      });
+      setErrorMessage("Musisz się zalogować aby to zrobić");
     }
-    history(0);
   };
 
   const checkIsFavouriteWater = async () => {
-    const user = allUsers.find(
-      (user) => user.data.UID === authUser.reloadUserInfo.localId,
-    );
-
-    if (user) {
-      const favourite = user.data.favouriteWater.some(
-        (water) => water.id === allWaterData[0].data.id,
+    if (authUser) {
+      const user = allUsers.find(
+        (user) => user.data.UID === authUser.reloadUserInfo.localId,
       );
-      if (favourite) {
-        setIsFavoutire(true);
+
+      if (user) {
+        const favourite = user.data.favouriteWater.some(
+          (water) => water.id === allWaterData[0].data.id,
+        );
+        if (favourite) {
+          setIsFavoutire(true);
+        }
       }
     }
   };
@@ -369,13 +380,13 @@ const WaterDetails = ({ authUser }) => {
   return (
     <>
       {/* DIV NA CAŁĄ STRONĘ */}
-      <div className="all-content">
+      <div className="waterdetails">
         {allWaterData.length > 0 ? (
           <>
             {/* DIV NA NAZWĘ I DANE O LOKALIZACJI I KTO DODAŁ ŁOWISKO*/}
             <div className="every-div name-div">
-              <p className="pt-3 text-[42px]">{allWaterData[0].data.name}</p>
-              <div className="flex justify-end">
+              <p className="waterName">{allWaterData[0].data.name}</p>
+              <div className="favourites-div">
                 <button onClick={addFavouriteWater}>
                   <Tooltip id="my-tooltip" className="z-10" />
                   <svg
@@ -400,8 +411,28 @@ const WaterDetails = ({ authUser }) => {
                   </svg>
                 </button>
               </div>
+              {errorMessage ? (
+                <div
+                  className="error-div bg-red-100text-red-700 relative rounded border border-red-400"
+                  role="alert">
+                  <span className="block text-red-500 sm:inline">
+                    {errorMessage}
+                  </span>
+                  <span className="error-span absolute bottom-0 right-0 top-0">
+                    <svg
+                      className="h-6 w-6 fill-current text-red-500"
+                      role="button"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      onClick={() => setErrorMessage("")}>
+                      <title>Zamknij</title>
+                      <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                    </svg>
+                  </span>
+                </div>
+              ) : null}
 
-              <div className="text-[16px] text-[#7a7a7a]">
+              <div className="location-div">
                 {allWaterData[0].data.city ? (
                   <span>{allWaterData[0].data.city}, </span>
                 ) : (
@@ -410,17 +441,15 @@ const WaterDetails = ({ authUser }) => {
 
                 <span>{allWaterData[0].data.voivodeship.label}</span>
               </div>
-              <p className="pb-5 text-right">
-                Dodał łowisko: {usernameAddedWater}
-              </p>
+              <p className="owner">Dodał łowisko: {usernameAddedWater}</p>
               {/* DIV NA PRZYCISKI DO EDYCJI */}
               {authUser && authUser.uid ? (
-                <div className="flex justify-end ">
+                <div className="admin-buttons">
                   {(allWaterData[0] && findRole(authUser.uid) === "admin") ||
                   authUser.uid === allWaterData[0].data.UID ? (
                     <button
                       onClick={handleEdit}
-                      className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
+                      className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon icon-tabler icon-tabler-edit"
@@ -444,7 +473,7 @@ const WaterDetails = ({ authUser }) => {
                   {findRole(authUser.uid) === "admin" ? (
                     <button
                       onClick={handleDelete}
-                      className="focus:shadow-outline mb-6 ml-4 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none">
+                      className="focus:shadow-outline rounded bg-red-500 font-bold text-white hover:bg-red-700 focus:outline-none">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon icon-tabler icon-tabler-trash"
@@ -472,7 +501,7 @@ const WaterDetails = ({ authUser }) => {
             </div>
 
             {/* DIV NA ZDJECIE */}
-            <div className="every-div p-5">
+            <div className="img-div every-div">
               <img
                 src={
                   allWaterData[0].data.imageURL
@@ -480,35 +509,32 @@ const WaterDetails = ({ authUser }) => {
                     : "https://placehold.co/600x400"
                 }
                 alt="Zdjęcia łowiska"
-                className="h-full w-full"
               />
             </div>
 
             {/* DIV NA OPIS ŁOWISKA */}
-            <div className="every-div p-5">
-              <p className="pb-4 text-[18px] font-bold">Opis łowiska:</p>
+            <div className="desc-div every-div">
+              <p className="desc">Opis łowiska:</p>
               <p>{allWaterData[0].data.description}</p>
             </div>
 
             {/* DIV NA REGULAMIN I JAKIE RYBY NA ŁOWISKU */}
-            <div className="every-div p-5">
-              <p className="pb-4 text-[18px] font-bold">
-                Ryby występujące na łowisku:
-              </p>
-              <div className="pb-4">
+            <div className="fish-div every-div">
+              <p className="fish-text">Ryby występujące na łowisku:</p>
+              <div className="fish-container">
                 {allWaterData[0].data.fish.map((fish) => (
-                  <div className="flex" key={fish.label}>
+                  <div className="fishIcon" key={fish.label}>
                     <FishIcon width={24} height={24} iconColor={"black"} />
-                    <p className="ml-4">{fish.label}</p>
+                    <p>{fish.label}</p>
                   </div>
                 ))}
               </div>
-              <p className="pb-4 text-[18px] font-bold">Regulamin łowiska:</p>
+              <p className="rules">Regulamin łowiska:</p>
               <p>{allWaterData[0].data.rules}</p>
             </div>
 
             {/* DIV NA KALENDARZ BRAŃ */}
-            <div className="every-div flex justify-center p-5 text-center">
+            <div className="every-div strCallendar">
               <StrikeCallendar
                 lat={allWaterData[0].data.lat}
                 lon={allWaterData[0].data.lon}
@@ -516,19 +542,16 @@ const WaterDetails = ({ authUser }) => {
             </div>
 
             {/* DIV NA KOMENATRZE */}
-            <div className="comment-div flex w-full flex-col items-center justify-center pt-4">
-              <p className="pb-4 text-[18px]">Sekcja komentarzy</p>
+            <div className="comment-div">
+              <p className="comment-section">Sekcja komentarzy</p>
               {allComments.map((comment) => (
-                <div
-                  key={comment.data.id}
-                  className="comment-block flex w-full flex-row bg-white py-4">
+                <div key={comment.data.id} className="comment-block">
                   {/* DIV NA AVATR I NICK */}
-                  <div className="flex w-[200px] flex-col items-center">
+                  <div className="user-div">
                     <div>
                       <img
                         src={findAvatar(comment.data.UID)}
                         alt="Avatar użytkownika"
-                        className="avatar-comment"
                       />
                     </div>
                     <div>
@@ -536,22 +559,22 @@ const WaterDetails = ({ authUser }) => {
                     </div>
                   </div>
                   {/* DIV NA KOMENTARZ DATE I DELETEBUTTON */}
-                  <div className="flex w-full flex-col px-2">
+                  <div className="comment-info">
                     {/* DIV NA DATE */}
-                    <div className="self-end">
+                    <div className="date">
                       <p>Data: {comment.data.date}</p>
                     </div>
                     {/* DIV NA KOMENTARZ */}
                     <div>
-                      <p>{comment.data.comment}</p>
+                      <p className="comment">{comment.data.comment}</p>
                     </div>
                     {/* DIV NA BUTTON */}
-                    <div className="self-end">
+                    <div className="delete-button-div">
                       {authUser && findRole(authUser.uid) === "admin" ? (
                         <div>
                           <button
                             onClick={() => deleteComment(comment.data.id)}
-                            className="focus:shadow-outline mb-6 rounded bg-red-500 px-2 py-1 font-bold text-white hover:bg-red-700 focus:outline-none">
+                            className="focus:shadow-outline rounded bg-red-500 font-bold text-white hover:bg-red-700 focus:outline-none">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="icon icon-tabler icon-tabler-trash"
@@ -584,10 +607,10 @@ const WaterDetails = ({ authUser }) => {
                 </div>
               ))}
               {allComments.length > 0 ? (
-                <div className="mt-4 flex justify-center">
+                <div className="pagination-div">
                   <button
                     onClick={previous}
-                    className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
+                    className={`mx-1 rounded bg-blue-500 text-white focus:outline-none ${
                       hasPrevPage ? "" : "cursor-not-allowed opacity-50"
                     }`}
                     disabled={!hasPrevPage}>
@@ -595,7 +618,7 @@ const WaterDetails = ({ authUser }) => {
                   </button>
                   <button
                     onClick={paginate}
-                    className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
+                    className={`mx-1 rounded bg-blue-500 text-white focus:outline-none ${
                       hasNextPage ? "" : "cursor-not-allowed opacity-50"
                     }`}
                     disabled={!hasNextPage}>
@@ -604,15 +627,13 @@ const WaterDetails = ({ authUser }) => {
                 </div>
               ) : null}
               {authUser ? (
-                <div className="w-full px-4 text-center">
+                <div className="add-comment-div">
                   <form>
-                    <div className="mb-4 pt-6">
-                      <label className="mb-4 block text-sm font-bold text-gray-700">
-                        Dodaj komentarz
-                      </label>
+                    <div className="form-div">
+                      <label className="text-gray-700">Dodaj komentarz</label>
                       <div>
                         <textarea
-                          className="focus:shadow-outline max-h-40 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                          className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                           id="comment"
                           type="text"
                           placeholder="Komentarz"
@@ -622,7 +643,7 @@ const WaterDetails = ({ authUser }) => {
                         />
                         <button
                           onClick={handleForm}
-                          className="focus:shadow-outline mb-6 ml-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none">
+                          className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none">
                           Dodaj
                         </button>
                       </div>
@@ -630,7 +651,7 @@ const WaterDetails = ({ authUser }) => {
                   </form>
                 </div>
               ) : (
-                <p className="p-5 font-bold">
+                <p className="login-info">
                   Aby dodać komentarz należy być zalogowanym użytkownikiem
                 </p>
               )}

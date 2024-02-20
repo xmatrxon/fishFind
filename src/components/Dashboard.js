@@ -422,77 +422,75 @@ const Dashboard = () => {
   }
 
   return (
-    <>
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-[#ddd] text-center">
-        <p className="my-4 pt-4 text-[34px] font-bold">Wyszukwanie łowisk</p>
-        <p className="text-[18px]">
+    <div className="dashboard">
+      <div className="header">
+        <h1 className="header__heading ">Wyszukiwarka łowisk</h1>
+        <p className="header__text">
           Skorzystaj z naszej wyszukiwarki łowisk. Możesz wyszukiwać po nazwie
           łowiska, województwie lub też po występujących rybach na łowisku.
         </p>
-        <div className=" mt-20 h-3/4 w-9/12 rounded-lg bg-white">
-          <div>
-            <form className="border-silver mb-10 flex w-full flex-wrap rounded border-b-2 border-solid bg-white pt-6">
-              <div className="mb-6 ml-16 flex w-full">
-                <input
-                  className="focus:shadow-outline mr-10 w-4/12 appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  id="name"
-                  type="text"
-                  placeholder="Nazwa łowiska"
-                  name="name"
-                  onChange={(e) =>
-                    setName(capitalizeFirstLetter(e.target.value))
-                  }
-                />
-                <Select
-                  className="mr-10 w-3/12"
-                  options={voivodeshipList}
-                  placeholder="Województwo"
-                  value={voivodeship}
-                  onChange={handleVoivodeship}
-                  isMulti={false}
-                  isClearable={true}
-                />
-                <Select
-                  className="mr-10"
-                  options={fishList}
-                  placeholder="Występujące ryby"
-                  value={fish}
-                  onChange={handleFish}
-                  isMulti
-                  components={animatedComponents}
-                />
-                <button
-                  className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-                  onClick={clickHandler}
-                  disabled={isSearching}>
-                  Szukaj
-                </button>
-              </div>
-            </form>
-          </div>
-          <div className="px-10">
+        <div className="white-block white-block-left"></div>
+      </div>
+      <div className="content-div">
+        <div className="inner-div">
+          <form className="border-silver">
+            <div className="input-div">
+              <input
+                className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
+                id="name"
+                type="text"
+                placeholder="Nazwa łowiska"
+                name="name"
+                onChange={(e) => setName(capitalizeFirstLetter(e.target.value))}
+              />
+              <Select
+                className="voivodeship-select"
+                options={voivodeshipList}
+                placeholder="Województwo"
+                value={voivodeship}
+                onChange={handleVoivodeship}
+                isMulti={false}
+                isClearable={true}
+              />
+              <Select
+                className="fish-select"
+                options={fishList}
+                placeholder="Występujące ryby"
+                value={fish}
+                onChange={handleFish}
+                isMulti
+                components={animatedComponents}
+              />
+              <button
+                className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                onClick={clickHandler}
+                disabled={isSearching}>
+                Szukaj
+              </button>
+            </div>
+          </form>
+
+          <div className="results-div">
             {allWaterData.length > 0 ? (
               allWaterData.map((water) => (
-                <div
-                  key={water.data.id}
-                  className="mb-5 flex h-full justify-between rounded-lg bg-[#ddd] px-10 py-3">
-                  <div className="w-full">
-                    <p>{water.data.name}</p>
-                    <div className="flex w-full">
+                <div key={water.data.id} className="water-div">
+                  <div className="data-div">
+                    <p className="water-name">{water.data.name}</p>
+                    <div className="fish-div">
                       <FishIcon
                         height={24}
                         width={24}
                         iconColor={"currentColor"}
                       />
                       {Array.isArray(water.data.fish) && (
-                        <p className="ml-2">
+                        <p>
                           {water.data.fish.map((fish) => fish.label).join(", ")}
                         </p>
                       )}
                     </div>
                   </div>
                   <Link
-                    className="focus:shadow-outline flex items-center justify-center rounded bg-blue-500 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                    className="water-link focus:shadow-outline flex items-center justify-center rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                     to={`/dashboard/${water.data.id}`}>
                     Szczegóły
                   </Link>
@@ -501,10 +499,10 @@ const Dashboard = () => {
             ) : (
               <p>Brak łowisk</p>
             )}
-            <div className="mt-4 flex justify-center">
+            <div className="buttons-div">
               <button
                 onClick={previous}
-                className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
+                className={`bg-blue-500 focus:outline-none ${
                   hasPrevPage ? "" : "cursor-not-allowed opacity-50"
                 }`}
                 disabled={!hasPrevPage}>
@@ -512,7 +510,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={paginate}
-                className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
+                className={`bg-blue-500 focus:outline-none ${
                   hasNextPage ? "" : "cursor-not-allowed opacity-50"
                 }`}
                 disabled={!hasNextPage}>
@@ -523,7 +521,7 @@ const Dashboard = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

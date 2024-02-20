@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Select from "react-select";
 import StrikeCallendar from "./StrikeCallendar";
 import { cityList } from "../cityList";
 import { useLoading } from "./LoadingContext";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
-
-import "../index.css";
 
 const Home = () => {
   const [city, setCity] = useState("Warszawa");
@@ -46,10 +44,10 @@ const Home = () => {
   }
 
   return (
-    <div>
+    <div className="home">
       {/* OBRAZ GŁÓWNY */}
-      <div className="header section">
-        <h1 className="header__heading">FishFind</h1>
+      <div className="header">
+        <h1 className="header__heading ">FishFind</h1>
         <p className="header__text">
           Jedyny portal wędkarski jakiego potrzebujesz!
         </p>
@@ -59,17 +57,17 @@ const Home = () => {
         <div className="white-block white-block-left"></div>
       </div>
       {/* O NAS */}
-      <div>
-        <div className=" section-padding">
+      <div className="usage">
+        <div className="section-padding">
           <div>
             <h2 className="section-heading">Nasz portal umożliwia</h2>
           </div>
-          <div className="flex justify-between">
-            <div className="icons flex flex-col">
-              <p className="self-center">
+          <div className="icon-component">
+            <div className="icons">
+              <p className="icon-block">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-file-plus mb-2"
+                  className="icon icon-tabler icon-tabler-file-plus"
                   width={48}
                   height={48}
                   viewBox="0 0 24 24"
@@ -87,11 +85,11 @@ const Home = () => {
               </p>
               <p>Dodawanie nowych łowisk</p>
             </div>
-            <div className="icons flex flex-col">
-              <p className="self-center">
+            <div className="icons">
+              <p className="icon-block">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-message-plus mb-2"
+                  className="icon icon-tabler icon-tabler-message-plus"
                   width={48}
                   height={48}
                   viewBox="0 0 24 24"
@@ -110,11 +108,11 @@ const Home = () => {
               </p>
               <p>Komentowanie łowisk</p>
             </div>
-            <div className="icons flex flex-col">
-              <p className="self-center">
+            <div className="icons">
+              <p className="icon-block">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-search mb-2"
+                  className="icon icon-tabler icon-tabler-search"
                   width={48}
                   height={48}
                   viewBox="0 0 24 24"
@@ -130,11 +128,11 @@ const Home = () => {
               </p>
               <p> Wyszukiwanie łowisk po wielu parametrach</p>
             </div>
-            <div className="icons flex flex-col">
-              <p className="self-center">
+            <div className="icons">
+              <p className="icon-block">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-map mb-2"
+                  className="icon icon-tabler icon-tabler-map"
                   width={48}
                   height={48}
                   viewBox="0 0 24 24"
@@ -155,22 +153,22 @@ const Home = () => {
         </div>
       </div>
       {/* Kalendarz */}
-      <div className="hero-img section">
+      <div className="hero-img">
         <div className="black-block white-block-left"></div>
         <div className="white-block white-block-right"></div>
         <p className="hero-img__title">Kalendarz brań</p>
-        <div className="flex justify-center">
-          <div className="flex flex-col ">
+        <div className="big-div">
+          <div className="small-div">
             <form action="">
               <Select
-                className="text-black"
+                className="select-box text-black"
                 options={cityList}
                 placeholder="Miasto"
                 onChange={handleVoivodeship}
                 isMulti={false}
               />
             </form>
-            <h2 className="pb-2 pt-5">Brania dla {displayCity}</h2>
+            <h2>Brania dla {displayCity}</h2>
             <StrikeCallendar city={city} />
           </div>
         </div>

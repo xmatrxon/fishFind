@@ -110,11 +110,9 @@ export const SignUp = () => {
 
         history("/account");
       } catch (err) {
-        switch (err.code) {
-          case "auth/email-already-in-use":
-            setErrorMessage("Podany email znajduje się już w bazie");
-            break;
-        }
+        if (err.code === "auth/email-already-in-use")
+          setErrorMessage("Podany email znajduje się już w bazie");
+        return;
       }
     },
   });
@@ -141,20 +139,16 @@ export const SignUp = () => {
 
   return (
     <>
-      <div className="sss flex w-full justify-center text-center">
-        <div className="w-2/5 self-center">
+      <div className="signup">
+        <div className="form-div">
           <form
             onSubmit={formik.handleSubmit}
-            className="mb-4 rounded bg-[#fafafa] px-8 pb-8 pt-6 shadow-md">
-            <h1 className="border-silver border-b-2 border-solid pb-4">
-              Rejestracja
-            </h1>
-            <div className="mb-4 pt-6">
-              <label className="mb-2 block text-sm font-bold text-gray-700">
-                Adres email
-              </label>
+            className="register-form shadow-md">
+            <h1 className="">Rejestracja</h1>
+            <div className="email-div">
+              <label className=" text-gray-700">Adres email</label>
               <input
-                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="email"
                 type="text"
                 placeholder="Email"
@@ -169,12 +163,10 @@ export const SignUp = () => {
                 </p>
               ) : null}
             </div>
-            <div className="mb-4">
-              <label className="mb-2 block text-sm font-bold text-gray-700">
-                Nazwa użytkownika
-              </label>
+            <div className="username-div">
+              <label className="text-gray-700">Nazwa użytkownika</label>
               <input
-                className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="username"
                 type="text"
                 placeholder="Nazwa użytkownika"
@@ -189,12 +181,10 @@ export const SignUp = () => {
                 </p>
               ) : null}
             </div>
-            <div className="mb-6">
-              <label className="mb-2 block text-sm font-bold text-gray-700">
-                Hasło
-              </label>
+            <div className="password-div">
+              <label className="text-gray-700">Hasło</label>
               <input
-                className="focus:shadow-outline w-full appearance-none rounded border  px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="password"
                 type="password"
                 placeholder="********"
@@ -209,14 +199,14 @@ export const SignUp = () => {
                 </p>
               ) : null}
             </div>
-            <div className="mb-6">
-              <div className="flex justify-center">
+            <div className="file-div">
+              <div className="inner-div">
                 <Tooltip id="my-tooltip" className="z-10" />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="icon icon-tabler icon-tabler-info-circle mr-4 self-center"
-                  width={20}
-                  height={20}
+                  className="icon icon-tabler icon-tabler-info-circle"
+                  width={24}
+                  height={24}
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                   stroke="currentColor"
@@ -260,17 +250,19 @@ export const SignUp = () => {
             </div>
             {errorMessage ? (
               <div
-                className="relative mt-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
+                className="error-div bg-red-100text-red-700 relative rounded border border-red-400"
                 role="alert">
-                <span className="block sm:inline">{errorMessage}</span>
-                <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
+                <span className="block text-red-500 sm:inline">
+                  {errorMessage}
+                </span>
+                <span className="error-span absolute bottom-0 right-0 top-0">
                   <svg
                     className="h-6 w-6 fill-current text-red-500"
                     role="button"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     onClick={() => setErrorMessage("")}>
-                    <title>Close</title>
+                    <title>Zamknij</title>
                     <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
                   </svg>
                 </span>

@@ -11,14 +11,12 @@ import * as Yup from "yup";
 import { Tooltip } from "react-tooltip";
 import { v4 } from "uuid";
 
-import "../index.css";
-
 const NewFormPopup = (props) => {
   const [voivodeship, setVoivodeship] = useState("");
   const [fish, setFish] = useState("");
-  const [isVisible, setIsVisible] = useState(true);
-
   const [clickedButton, setClickedButton] = useState(false);
+
+  const isVisible = true;
 
   const formik = useFormik({
     initialValues: {
@@ -134,32 +132,18 @@ const NewFormPopup = (props) => {
     <>
       <div
         onClick={handlePopupClick}
-        className={`popup-background ${isVisible ? "visible" : "hidden"}`}>
+        className={`popup-water popup-background ${
+          isVisible ? "visible" : "hidden"
+        }`}>
         <div
           onClick={(e) => e.stopPropagation()}
           style={{
-            position: "relative",
-            background: "white",
-            borderRadius: "8px",
-            width: "600px",
-            padding: "20px 10px",
             animation: isVisible ? "fadeIn 0.3s linear" : "fadeOut 0.3s linear",
           }}
-          className="!bg-white">
-          <div
-            style={{
-              borderBottom: "1px solid lightgray",
-              paddingBottom: "10px",
-            }}>
-            <h1 className="text-xl">Dodaj łowisko</h1>
-            <div
-              onClick={handlePopupClick}
-              style={{
-                cursor: "pointer",
-                position: "absolute",
-                top: 10,
-                right: 10,
-              }}>
+          className="content">
+          <div className="header-div">
+            <h1>Dodaj łowisko</h1>
+            <div onClick={handlePopupClick} className="button-div">
               <button
                 className="focus:shadow-outline t-0 mb-5 flex rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
                 type="button"
@@ -182,17 +166,11 @@ const NewFormPopup = (props) => {
               </button>
             </div>
           </div>
-          <div>
-            {" "}
-            <form
-              onSubmit={formik.handleSubmit}
-              className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
-              <div className="flex justify-between">
-                <p></p>
-              </div>
-              <div className="mb-4">
+          <div className="form-div">
+            <form onSubmit={formik.handleSubmit} className="shadow-md">
+              <div className="input-div">
                 <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                  className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="name"
                   type="text"
                   placeholder="Nazwa łowiska"
@@ -216,9 +194,9 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="mb-4">
+              <div className="input-div">
                 <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                  className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="description"
                   type="text"
                   placeholder="Opis łowiska"
@@ -233,10 +211,10 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="mb-4 ">
+              <div className="input-div">
                 <div className="flex">
                   <textarea
-                    className="focus:shadow-outline max-h-40 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                    className="focus:shadow-outline max-h-40 w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                     id="rules"
                     type="text"
                     placeholder="Regulamin łowiska"
@@ -272,9 +250,9 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="mb-4">
+              <div className="input-div">
                 <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                  className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="city"
                   type="text"
                   placeholder="Miasto"
@@ -289,9 +267,8 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="mb-4">
+              <div className="input-div">
                 <Select
-                  className=""
                   options={voivodeshipList}
                   placeholder="Województwo"
                   value={voivodeship}
@@ -306,9 +283,8 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="mb-4">
+              <div className="input-div">
                 <Select
-                  className=""
                   options={fishList}
                   placeholder="Występujące ryby"
                   value={fish}
@@ -323,8 +299,8 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="mb-4">
-                <div className="flex">
+              <div className="input-div">
+                <div className="flex justify-center">
                   <input
                     type="file"
                     name="image"
@@ -361,7 +337,7 @@ const NewFormPopup = (props) => {
                   </p>
                 ) : null}
               </div>
-              <div className="flex items-center justify-between">
+              <div className="button-div">
                 <button
                   className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                   type="submit"

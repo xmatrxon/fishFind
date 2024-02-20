@@ -1,4 +1,3 @@
-import "../index.css";
 import "leaflet/dist/leaflet.css";
 import {
   MapContainer,
@@ -6,14 +5,12 @@ import {
   Marker,
   Popup,
   useMapEvents,
-  GeoJSON,
 } from "react-leaflet";
 import L from "leaflet";
 import Control from "react-leaflet-custom-control";
 import { useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import FormPopup from "./FormPopup";
 import pointInPolygon from "point-in-polygon";
 import { Link } from "react-router-dom";
 import { useLoading } from "./LoadingContext";
@@ -22,7 +19,6 @@ import NewFormPopup from "./NewFormPopup";
 import { db } from "../config/firebase";
 import { collection, getDocs, query } from "firebase/firestore";
 
-import "../index.css";
 import ErrorModal from "./ErrorModal";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -42,7 +38,6 @@ const Map = ({ authUser }) => {
   const [clickedWaterId, setClickedWaterId] = useState("");
   const [voivodeships, setVoivodeships] = useState([]);
   const [userID, setUserID] = useState();
-  // const [loading, setLoading] = useState(true);
   const { isLoading, setLoading } = useLoading();
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -129,78 +124,6 @@ const Map = ({ authUser }) => {
     fetchData();
   }, [voivodeships, markers]);
 
-  // useEffect(() => {
-  //   let markersData;
-  //   const getMarkers = async () => {
-  //     try {
-  //       const q = query(collection(db, "markers"));
-  //       const querySnapshot = await getDocs(q);
-  //       markersData = [];
-  //       querySnapshot.forEach((doc) => {
-  //         markersData.push({ id: doc.id, data: doc.data() });
-  //       });
-  //       setMarkers(markersData);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   const fetchVoivodeships = async () => {
-  //     try {
-  //       const voivodeshipNames = [
-  //         "slaskie",
-  //         "dolnoslaskie",
-  //         "kujawsko-pomorskie",
-  //         "lodzkie",
-  //         "lubelskie",
-  //         "lubuskie",
-  //         "malopolskie",
-  //         "mazowieckie",
-  //         "opolskie",
-  //         "podkarpackie",
-  //         "podlaskie",
-  //         "pomorskie",
-  //         "swietokrzyskie",
-  //         "warminsko-mazurskie",
-  //         "wielkopolskie",
-  //         "zachodnio-pomorskie",
-  //       ];
-
-  //       const voivodeshipsData = await Promise.all(
-  //         voivodeshipNames.map(async (voivodeship) => {
-  //           const response = await fetch(
-  //             `https://xmatrxon.github.io/apiSite/${voivodeship}.json`,
-  //           );
-  //           const data = await response.json();
-  //           return { name: voivodeship, data };
-  //         }),
-  //       );
-
-  //       setVoivodeships(voivodeshipsData);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
-  //   const fetchData = async () => {
-  //     await getMarkers();
-  //     if (!voivodeships.length) {
-  //       await fetchVoivodeships();
-  //     }
-
-  //     if (voivodeships.length && markers.length) {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [popupVisible, voivodeships, markers]);
-
-  const onEachWater = (feature, layer) => {
-    const waterName = feature.properties["@id"];
-    layer.bindPopup(waterName);
-  };
-
   const closePopup = (data) => {
     setPopupVisible(data.value);
   };
@@ -233,9 +156,6 @@ const Map = ({ authUser }) => {
           if (isInsideAnyVoivodeship) {
             setPopupVisible(true);
           } else {
-            // alert(
-            //   "Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym",
-            // );
             setIsError(true);
             setErrorMsg(
               "Podane koordynaty nie znajdują się w żadnym zbiorniku wodnym.",
@@ -244,7 +164,6 @@ const Map = ({ authUser }) => {
         } else {
           setIsError(true);
           setErrorMsg("Aby dodać łowisko należy się zalogować!");
-          // alert("Aby dodać łowisko należy się zalogować");
         }
       },
     });
@@ -259,9 +178,6 @@ const Map = ({ authUser }) => {
       setPopupVisible(false);
       setIsError(true);
       setErrorMsg("W tym zbiorniku wodnym znajduje się już łowisko.");
-      // alert(
-      //   `W tej lokalizacji znajduje się już znacznik: ${matchingMarker.id}`,
-      // );
     }
   };
 
@@ -298,13 +214,13 @@ const Map = ({ authUser }) => {
 
   return (
     <>
-      <div className="absolute z-0">
+      <div className="map">
         <MapContainer
           center={[51.918904, 19.1343786]}
           maxBounds={maxBounds}
           zoom={7}
           minZoom={7}
-          className="mt-[5vh] h-[95vh] w-screen">
+          className="map-container w-screen">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -357,7 +273,6 @@ const Map = ({ authUser }) => {
               </button>
             </div>
           </Control>
-          {/* <GeoJSON data={slaskie.features} onEachFeature={onEachWater} /> */}
           {markersVisible ? (
             <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
               {markers.map((water) => (
@@ -365,8 +280,8 @@ const Map = ({ authUser }) => {
                   key={water.id}
                   position={[water.data.lat, water.data.lon]}>
                   <Popup>
-                    <div className="flex flex-col">
-                      <p className="flex self-center">{water.data.name}</p>
+                    <div className="popup">
+                      <p>{water.data.name}</p>
                       <Link
                         className="focus:shadow-outline flex justify-center rounded bg-blue-500 px-4 py-2 font-bold !text-white hover:bg-blue-700 focus:outline-none"
                         to={`/dashboard/${water.data.id}`}>
@@ -380,15 +295,6 @@ const Map = ({ authUser }) => {
           ) : null}
         </MapContainer>
       </div>
-      {/* <FormPopup
-        trigger={popupVisible}
-        setTrigger={setPopupVisible}
-        lat={markerLat}
-        lng={markerLng}
-        clickedWaterId={clickedWaterId}
-        pass={closePopup}
-        uid={userID}
-      /> */}
 
       <ErrorModal
         trigger={isError}
