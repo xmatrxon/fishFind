@@ -145,6 +145,7 @@ const NewFormPopup = (props) => {
             <h1>Dodaj łowisko</h1>
             <div onClick={handlePopupClick} className="button-div">
               <button
+                aria-label="Close popup"
                 className="focus:shadow-outline t-0 mb-5 flex rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
                 type="button"
                 onClick={() => props.setTrigger(false)}>
@@ -170,6 +171,7 @@ const NewFormPopup = (props) => {
             <form onSubmit={formik.handleSubmit} className="shadow-md">
               <div className="input-div">
                 <input
+                  aria-label="Name"
                   className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="name"
                   type="text"
@@ -196,6 +198,7 @@ const NewFormPopup = (props) => {
               </div>
               <div className="input-div">
                 <input
+                  aria-label="Description"
                   className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="description"
                   type="text"
@@ -252,6 +255,7 @@ const NewFormPopup = (props) => {
               </div>
               <div className="input-div">
                 <input
+                  aria-label="City"
                   className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="city"
                   type="text"
@@ -269,6 +273,7 @@ const NewFormPopup = (props) => {
               </div>
               <div className="input-div">
                 <Select
+                  aria-label="Voivodeship"
                   options={voivodeshipList}
                   placeholder="Województwo"
                   value={voivodeship}
@@ -285,6 +290,7 @@ const NewFormPopup = (props) => {
               </div>
               <div className="input-div">
                 <Select
+                  aria-label="Fish"
                   options={fishList}
                   placeholder="Występujące ryby"
                   value={fish}
@@ -302,6 +308,7 @@ const NewFormPopup = (props) => {
               <div className="input-div">
                 <div className="flex justify-center">
                   <input
+                    aria-label="File"
                     type="file"
                     name="image"
                     onChange={(event) =>
@@ -339,6 +346,7 @@ const NewFormPopup = (props) => {
               </div>
               <div className="button-div">
                 <button
+                  aria-label="Add"
                   className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                   type="submit"
                   onClick={() => setClickedButton(true)}>

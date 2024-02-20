@@ -436,6 +436,7 @@ const Dashboard = () => {
           <form className="border-silver">
             <div className="input-div">
               <input
+                aria-label="Name"
                 className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="name"
                 type="text"
@@ -444,6 +445,7 @@ const Dashboard = () => {
                 onChange={(e) => setName(capitalizeFirstLetter(e.target.value))}
               />
               <Select
+                aria-label="Voivodeship"
                 className="voivodeship-select"
                 options={voivodeshipList}
                 placeholder="Województwo"
@@ -453,6 +455,7 @@ const Dashboard = () => {
                 isClearable={true}
               />
               <Select
+                aria-label="Fish"
                 className="fish-select"
                 options={fishList}
                 placeholder="Występujące ryby"
@@ -462,6 +465,7 @@ const Dashboard = () => {
                 components={animatedComponents}
               />
               <button
+                aria-label="Search"
                 className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                 onClick={clickHandler}
                 disabled={isSearching}>
@@ -501,6 +505,7 @@ const Dashboard = () => {
             )}
             <div className="buttons-div">
               <button
+                aria-label="Prev page"
                 onClick={previous}
                 className={`bg-blue-500 focus:outline-none ${
                   hasPrevPage ? "" : "cursor-not-allowed opacity-50"
@@ -509,6 +514,7 @@ const Dashboard = () => {
                 Poprzednia strona
               </button>
               <button
+                aria-label="Next page"
                 onClick={paginate}
                 className={`bg-blue-500 focus:outline-none ${
                   hasNextPage ? "" : "cursor-not-allowed opacity-50"

@@ -387,7 +387,9 @@ const WaterDetails = ({ authUser }) => {
             <div className="every-div name-div">
               <p className="waterName">{allWaterData[0].data.name}</p>
               <div className="favourites-div">
-                <button onClick={addFavouriteWater}>
+                <button
+                  aria-label="Manage favourite"
+                  onClick={addFavouriteWater}>
                   <Tooltip id="my-tooltip" className="z-10" />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -448,6 +450,7 @@ const WaterDetails = ({ authUser }) => {
                   {(allWaterData[0] && findRole(authUser.uid) === "admin") ||
                   authUser.uid === allWaterData[0].data.UID ? (
                     <button
+                      aria-label="Edit water"
                       onClick={handleEdit}
                       className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none">
                       <svg
@@ -472,6 +475,7 @@ const WaterDetails = ({ authUser }) => {
                   ) : null}
                   {findRole(authUser.uid) === "admin" ? (
                     <button
+                      aria-label="Delete water"
                       onClick={handleDelete}
                       className="focus:shadow-outline rounded bg-red-500 font-bold text-white hover:bg-red-700 focus:outline-none">
                       <svg
@@ -573,6 +577,7 @@ const WaterDetails = ({ authUser }) => {
                       {authUser && findRole(authUser.uid) === "admin" ? (
                         <div>
                           <button
+                            aria-label="Delete comment"
                             onClick={() => deleteComment(comment.data.id)}
                             className="focus:shadow-outline rounded bg-red-500 font-bold text-white hover:bg-red-700 focus:outline-none">
                             <svg
@@ -609,6 +614,7 @@ const WaterDetails = ({ authUser }) => {
               {allComments.length > 0 ? (
                 <div className="pagination-div">
                   <button
+                    aria-label="Prev page"
                     onClick={previous}
                     className={`mx-1 rounded bg-blue-500 text-white focus:outline-none ${
                       hasPrevPage ? "" : "cursor-not-allowed opacity-50"
@@ -617,6 +623,7 @@ const WaterDetails = ({ authUser }) => {
                     Poprzednia strona
                   </button>
                   <button
+                    aria-label="Next page"
                     onClick={paginate}
                     className={`mx-1 rounded bg-blue-500 text-white focus:outline-none ${
                       hasNextPage ? "" : "cursor-not-allowed opacity-50"
@@ -642,6 +649,7 @@ const WaterDetails = ({ authUser }) => {
                           onChange={handleNewComment}
                         />
                         <button
+                          aria-label="Add"
                           onClick={handleForm}
                           className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none">
                           Dodaj

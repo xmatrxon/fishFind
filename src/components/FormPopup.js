@@ -121,6 +121,7 @@ const FormPopup = (props) => {
             <p></p>
             <h1 className="text-xl">Dodaj łowisko</h1>
             <button
+              aria-label="Close popup"
               className="focus:shadow-outline t-0 mb-5 flex rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
               type="button"
               onClick={() => props.setTrigger(false)}>
@@ -143,6 +144,7 @@ const FormPopup = (props) => {
           </div>
           <div className="mb-4">
             <input
+              aria-label="Name"
               className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
               id="name"
               type="text"
@@ -169,6 +171,7 @@ const FormPopup = (props) => {
           </div>
           <div className="mb-4">
             <input
+              aria-label="Description"
               className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
               id="description"
               type="text"
@@ -225,6 +228,7 @@ const FormPopup = (props) => {
           </div>
           <div className="mb-4">
             <input
+              aria-label="City"
               className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
               id="city"
               type="text"
@@ -242,7 +246,7 @@ const FormPopup = (props) => {
           </div>
           <div className="mb-4">
             <Select
-              className=""
+              aria-label="Voivodeship"
               options={voivodeshipList}
               placeholder="Województwo"
               value={voivodeship}
@@ -259,7 +263,7 @@ const FormPopup = (props) => {
           </div>
           <div className="mb-4">
             <Select
-              className=""
+              aria-label="Fish"
               options={fishList}
               placeholder="Występujące ryby"
               value={fish}
@@ -276,6 +280,7 @@ const FormPopup = (props) => {
           <div className="mb-4">
             <div className="flex">
               <input
+                aria-label="File"
                 type="file"
                 name="image"
                 onChange={(event) =>
@@ -309,6 +314,7 @@ const FormPopup = (props) => {
           </div>
           <div className="flex items-center justify-between">
             <button
+              aria-label="Add"
               className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
               type="submit"
               onClick={() => setClickedButton(true)}>

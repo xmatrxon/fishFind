@@ -40,6 +40,7 @@ const ChangePassword = ({ authUser }) => {
                 <div className="input-div">
                   <label className="text-gray-700">Nowe hasło</label>
                   <input
+                    aria-label="Password"
                     className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                     id="password"
                     type="password"
@@ -57,6 +58,7 @@ const ChangePassword = ({ authUser }) => {
                 </div>
                 <div>
                   <button
+                    aria-label="Change"
                     className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                     type="submit">
                     Zmień

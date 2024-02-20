@@ -17,7 +17,10 @@ const Navbar = ({ authUser }) => {
       <Link to="/" className="home-link" onClick={closeNavbar}>
         FishFind
       </Link>
-      <button className="toggle-button" onClick={toggleNavbar}>
+      <button
+        aria-label="Navbar"
+        className="toggle-button"
+        onClick={toggleNavbar}>
         <span className="bar"></span>
         <span className="bar"></span>
         <span className="bar"></span>

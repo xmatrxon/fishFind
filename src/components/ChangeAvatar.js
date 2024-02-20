@@ -114,6 +114,7 @@ const ChangeAvatar = ({ authUser }) => {
                       <path d="M11 12h1v4h1" />
                     </svg>
                     <input
+                      aria-label="File input"
                       type="file"
                       name="image"
                       onChange={(event) =>
@@ -133,6 +134,7 @@ const ChangeAvatar = ({ authUser }) => {
                 </div>
                 <div>
                   <button
+                    aria-label="Change"
                     className="focus:shadow-outline rounded bg-blue-500  font-bold text-white hover:bg-blue-700 focus:outline-none"
                     type="submit">
                     Zmień

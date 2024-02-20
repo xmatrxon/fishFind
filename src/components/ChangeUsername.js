@@ -77,6 +77,7 @@ const ChangeUsername = ({ authUser }) => {
                     Nowa nazwa użytkownika
                   </label>
                   <input
+                    aria-label="Username"
                     className="focus:shadow-outline borderleading-tight appearance-none rounded text-gray-700 shadow focus:outline-none"
                     id="username"
                     type="text"
@@ -94,6 +95,7 @@ const ChangeUsername = ({ authUser }) => {
                 </div>
                 <div>
                   <button
+                    aria-label="Change"
                     className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                     type="submit">
                     Zmień

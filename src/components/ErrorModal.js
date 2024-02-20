@@ -21,7 +21,7 @@ const ErrorModal = (props) => {
             <span className="block sm:inline">{props.errorMsg}</span>
           </div>
           <div className="ml-4">
-            <button onClick={handlePopupClick}>
+            <button aria-label="Close error" onClick={handlePopupClick}>
               <svg
                 className="h-6 w-6 fill-current text-red-500"
                 role="button"

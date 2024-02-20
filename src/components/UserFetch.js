@@ -105,6 +105,7 @@ export const UserFetch = ({ authUser }) => {
                           />
                         )}
                         <button
+                          aria-label="Change avatar"
                           className="cursor-pointer border-none bg-transparent text-left text-blue-500 underline"
                           onClick={() => {
                             changeAvatar(user.id, user.data.imageURL);
@@ -125,6 +126,7 @@ export const UserFetch = ({ authUser }) => {
                                 id="email"
                                 type="text"
                                 name="email"
+                                aria-label="email"
                                 value={authUser.email}
                                 disabled
                               />
@@ -139,10 +141,12 @@ export const UserFetch = ({ authUser }) => {
                             id="username"
                             type="text"
                             name="username"
+                            aria-label="username"
                             value={user.data.username}
                             disabled
                           />
                           <button
+                            aria-label="Edit login button"
                             className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                             onClick={() => {
                               changeUsernamee(user.id);
@@ -185,10 +189,12 @@ export const UserFetch = ({ authUser }) => {
                             id="password"
                             type="password"
                             name="password"
+                            aria-label="password"
                             value="********"
                             disabled
                           />
                           <button
+                            aria-label="Edit password button"
                             className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                             onClick={() => {
                               handleClick(user.id);
@@ -223,6 +229,7 @@ export const UserFetch = ({ authUser }) => {
                     </div>
                     <div className="favourites-div">
                       <button
+                        aria-label="Favourites water button"
                         className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                         onClick={() => {
                           handleFavourites();

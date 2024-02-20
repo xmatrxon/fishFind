@@ -214,8 +214,9 @@ const StrikeCallendar = ({ lat, lon, city }) => {
       )}
       <div className="callendar-info">
         <p> Zobacz jak działa nasz kalendarz brań </p>
-        <button onClick={setIsOpenPopup.bind(this, true)}>
-          {" "}
+        <button
+          aria-label="Open info modal"
+          onClick={setIsOpenPopup.bind(this, true)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="icon icon-tabler icon-tabler-info-circle self-center"

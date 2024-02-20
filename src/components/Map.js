@@ -189,7 +189,7 @@ const Map = ({ authUser }) => {
     return (
       <>
         <div className="flex h-[calc(100vh-48px)] items-center justify-center">
-          <p className="pr-3">Ładowanie </p>
+          <p className="pr-3">Wczytywanie mapy</p>
           <svg
             className="-ml-1 mr-3 h-5 w-5 animate-spin text-black"
             xmlns="http://www.w3.org/2000/svg"
@@ -230,6 +230,7 @@ const Map = ({ authUser }) => {
             <div>
               <Tooltip id="my-tooltip" />
               <button
+                aria-label="Change visible of markers"
                 className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                 data-tooltip-id="my-tooltip"
                 data-tooltip-content={

@@ -148,6 +148,7 @@ export const SignUp = () => {
             <div className="email-div">
               <label className=" text-gray-700">Adres email</label>
               <input
+                aria-label="Email"
                 className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="email"
                 type="text"
@@ -166,6 +167,7 @@ export const SignUp = () => {
             <div className="username-div">
               <label className="text-gray-700">Nazwa użytkownika</label>
               <input
+                aria-label="Username"
                 className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="username"
                 type="text"
@@ -184,6 +186,7 @@ export const SignUp = () => {
             <div className="password-div">
               <label className="text-gray-700">Hasło</label>
               <input
+                aria-label="Password"
                 className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="password"
                 type="password"
@@ -221,6 +224,7 @@ export const SignUp = () => {
                   <path d="M11 12h1v4h1" />
                 </svg>
                 <input
+                  aria-label="File"
                   type="file"
                   name="image"
                   onChange={(event) =>
@@ -242,6 +246,7 @@ export const SignUp = () => {
             </div>
             <div>
               <button
+                aria-label="Register"
                 className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                 type="submit"
                 onClick={() => setClickedButton(true)}>

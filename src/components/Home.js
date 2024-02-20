@@ -161,6 +161,7 @@ const Home = () => {
           <div className="small-div">
             <form action="">
               <Select
+                aria-label="City"
                 className="select-box text-black"
                 options={cityList}
                 placeholder="Miasto"

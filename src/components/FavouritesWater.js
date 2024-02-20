@@ -142,6 +142,7 @@ const FavouritesWater = ({ authUser }) => {
             {currentWater.length > 0 ? (
               <div className="buttons-div">
                 <button
+                  aria-label="Prev page"
                   className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
                     currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
                   }`}
@@ -150,6 +151,7 @@ const FavouritesWater = ({ authUser }) => {
                   Poprzednia strona
                 </button>
                 <button
+                  aria-label="Next page"
                   className={`mx-1 rounded bg-blue-500 px-3 py-1 text-white focus:outline-none ${
                     currentWater.length < itemsPerPage ||
                     allWater.length % itemsPerPage === 0

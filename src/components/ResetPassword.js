@@ -38,6 +38,7 @@ const ResetPassword = () => {
               <div className="input-div">
                 <label className="text-gray-700">Adres email</label>
                 <input
+                  aria-label="Username"
                   className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="username"
                   type="text"
@@ -55,6 +56,7 @@ const ResetPassword = () => {
               </div>
               <div>
                 <button
+                  aria-label="Reset"
                   className="focus:shadow-outline rounded bg-blue-500 font-bold text-white hover:bg-blue-700 focus:outline-none"
                   type="submit">
                   Zresetuj

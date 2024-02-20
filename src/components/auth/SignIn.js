@@ -46,6 +46,7 @@ export const SignIn = () => {
             <div className="email-div">
               <label className="text-gray-700">Adres email</label>
               <input
+                aria-label="Email"
                 className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="email"
                 type="text"
@@ -64,6 +65,7 @@ export const SignIn = () => {
             <div className="pass-div">
               <label className="text-gray-700">Hasło</label>
               <input
+                aria-label="Password"
                 className="focus:shadow-outline appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                 id="password"
                 type="password"
@@ -88,6 +90,7 @@ export const SignIn = () => {
             </div>
             <div>
               <button
+                aria-label="Login"
                 className="focus:shadow-outline mb-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
                 type="submit">
                 Zaloguj
