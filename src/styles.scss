@@ -2,6 +2,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import "@fontsource/poppins";
+
 * {
   margin: 0;
   padding: 0;
@@ -47,7 +49,7 @@ body {
         rgba(20, 105, 241, 0.75),
         rgba(42, 10, 184, 0.75)
       ),
-      url("./img/fish-sm.jpg");
+      url("./img/fish-sm.webp");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -182,7 +184,7 @@ body {
         rgba(20, 105, 241, 0.75),
         rgba(42, 10, 184, 0.75)
       ),
-      url("./img/callendar-sm.jpg");
+      url("./img/callendar-sm.webp");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -538,7 +540,7 @@ body {
         rgba(20, 105, 241, 0.75),
         rgba(42, 10, 184, 0.75)
       ),
-      url("./img/favourites-sm.jpg");
+      url("./img/favourites-sm.webp");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -705,7 +707,7 @@ body {
         rgba(20, 105, 241, 0.75),
         rgba(42, 10, 184, 0.75)
       ),
-      url("./img/dashboard-sm.jpg");
+      url("./img/dashboard-sm.webp");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -1802,7 +1804,7 @@ input[type="file"]::file-selector-button:hover {
           rgba(20, 105, 241, 0.75),
           rgba(42, 10, 184, 0.75)
         ),
-        url("./img/fish-lg.jpg");
+        url("./img/fish-lg.webp");
     }
 
     .hero-img {
@@ -1811,7 +1813,7 @@ input[type="file"]::file-selector-button:hover {
           rgba(20, 105, 241, 0.75),
           rgba(42, 10, 184, 0.75)
         ),
-        url("./img/callendar-lg.jpg");
+        url("./img/callendar-lg.webp");
     }
   }
 
@@ -1822,7 +1824,7 @@ input[type="file"]::file-selector-button:hover {
           rgba(20, 105, 241, 0.75),
           rgba(42, 10, 184, 0.75)
         ),
-        url("./img/dashboard-lg.jpg");
+        url("./img/dashboard-lg.webp");
     }
 
     .content-div {
@@ -1857,7 +1859,7 @@ input[type="file"]::file-selector-button:hover {
           rgba(20, 105, 241, 0.75),
           rgba(42, 10, 184, 0.75)
         ),
-        url("./img/favourites-lg.jpg");
+        url("./img/favourites-lg.webp");
     }
 
     .content-div {
