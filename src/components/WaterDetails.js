@@ -164,6 +164,8 @@ const WaterDetails = ({ authUser }) => {
       if (helper === modulo || modulo === 3) {
         setHasNextPage(false);
       }
+      console.log("helper " + helper);
+      console.log("modulo " + modulo);
     } catch (err) {
       console.log(err);
     }
