@@ -35,7 +35,7 @@ const Dashboard = () => {
   const [hasPrevPage, setHasPrevPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [modulo, setModulo] = useState(null);
-  const [helper, setHelper] = useState(0);
+  const [helper, setHelper] = useState(5);
   const [helper2, setHelper2] = useState(5);
   const [isSearchEmpty, setIsSearchEmpty] = useState(true);
   const [isSearching, setIsSearching] = useState(true);
