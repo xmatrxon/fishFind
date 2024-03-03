@@ -43,7 +43,7 @@ const WaterDetails = ({ authUser }) => {
   const [firstDoc, setFirstDoc] = useState(null);
   const [hasPrevPage, setHasPrevPage] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(false);
-  const [helper, setHelper] = useState(0);
+  const [helper, setHelper] = useState(3);
   const [isFavourite, setIsFavoutire] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
