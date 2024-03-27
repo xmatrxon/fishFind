@@ -22,8 +22,19 @@ import FavouritesWater from "./components/FavouritesWater";
 import ChangeAvatar from "./components/ChangeAvatar";
 import { UserFetch } from "./components/UserFetch";
 import { LoadingProvider } from "./components/LoadingContext";
+import { useLocation } from "react-router-dom";
 
 import "./styles.scss";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -47,6 +58,7 @@ function App() {
       <Navbar authUser={authUser} />
       <div>
         <LoadingProvider>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/map" element={<Map authUser={authUser} />} />

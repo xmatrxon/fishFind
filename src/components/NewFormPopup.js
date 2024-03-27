@@ -32,7 +32,7 @@ const NewFormPopup = (props) => {
         .required("Nazwa łowiska jest wymagana"),
       description: Yup.string()
         .required("Opis łowiska jest wymagany")
-        .max(300, "Maksymalna ilość znaków to 300"),
+        .max(1000, "Maksymalna ilość znaków to 1000"),
       rules: Yup.string()
         .required("Regulamin łowiska jest wymagany")
         .max(300, "Maksymalna ilość znaków to 300"),
@@ -197,12 +197,13 @@ const NewFormPopup = (props) => {
                 ) : null}
               </div>
               <div className="input-div">
-                <input
+                <textarea
                   aria-label="Description"
-                  className="focus:shadow-outline w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
+                  className="focus:shadow-outline max-h-20 w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                   id="description"
                   type="text"
                   placeholder="Opis łowiska"
+                  rows="2"
                   name="description"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -215,9 +216,9 @@ const NewFormPopup = (props) => {
                 ) : null}
               </div>
               <div className="input-div">
-                <div className="flex">
+                <div className="flex flex-col">
                   <textarea
-                    className="focus:shadow-outline max-h-40 w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
+                    className="focus:shadow-outline max-h-20 w-full appearance-none rounded border leading-tight text-gray-700 shadow focus:outline-none"
                     id="rules"
                     type="text"
                     placeholder="Regulamin łowiska"
@@ -230,7 +231,7 @@ const NewFormPopup = (props) => {
                   <Tooltip id="my-tooltip" className="z-10" />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="icon icon-tabler icon-tabler-info-circle self-center"
+                    className="icon icon-tabler icon-tabler-info-circle mt-2 self-center"
                     width={20}
                     height={20}
                     viewBox="0 0 24 24"

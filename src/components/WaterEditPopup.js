@@ -22,7 +22,7 @@ const WaterEditPopup = (props) => {
       rules: "",
     },
     validationSchema: Yup.object({
-      description: Yup.string().max(300, "Maksymalna ilość znaków to 300"),
+      description: Yup.string().max(1000, "Maksymalna ilość znaków to 1000"),
       rules: Yup.string().max(300, "Maksymalna ilość znaków to 300"),
     }),
     onSubmit: async () => {
