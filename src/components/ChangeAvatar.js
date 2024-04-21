@@ -49,7 +49,6 @@ const ChangeAvatar = ({ authUser }) => {
         ),
     }),
     onSubmit: async (e) => {
-      e.preventDefault();
       setClickedButton(true);
 
       try {

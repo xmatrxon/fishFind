@@ -24,7 +24,6 @@ const ChangeUsername = ({ authUser }) => {
       username: Yup.string().required("Nazwa użytkownika jest wymagana"),
     }),
     onSubmit: async (e) => {
-      e.preventDefault();
       try {
         await getUsers();
 
